@@ -1,6 +1,11 @@
+// Constants
+var LOAD_DELAY=500;
+
+// Variables
 var map;
 var zones;
 var markersArray = [];
+var loadTimer = null;
 
 function initialize() {
   var mapOptions = {
@@ -10,7 +15,12 @@ function initialize() {
   map = new google.maps.Map(document.getElementById("map-canvas"),
     mapOptions);
 
-  google.maps.event.addListener(map, "bounds_changed", loadZones);
+  google.maps.event.addListener(map, "bounds_changed", function() {
+    if (loadTimer != null) {
+      clearTimeout(loadTimer);
+    }
+    loadTimer = setTimeout(loadZones, LOAD_DELAY);
+  });
 }
 
 function loadZones() {
@@ -24,7 +34,6 @@ function loadZones() {
   clearOverlays();
   $.ajax({
     type: "POST",
-//    dataType: "JSONP",
     crossDomain: true,
     url: "http://api.turfgame.com/v4/zones",
     contentType: "application/json",
