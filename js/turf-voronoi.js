@@ -24,6 +24,8 @@ function loadZones() {
   clearOverlays();
   $.ajax({
     type: "POST",
+//    dataType: "JSONP",
+    crossDomain: true,
     url: "http://api.turfgame.com/v4/zones",
     contentType: "application/json",
     data: JSON.stringify(data)
@@ -49,38 +51,102 @@ function loadZones() {
 //   "latitude":59.31514
 // }]
 function handleZoneResult(res) {
+  var sites = [];
   for (var i = 0; i < res.length; i++) {
-    var pos = new google.maps.LatLng(res[i].latitude, res[i].longitude);
-    var marker = new google.maps.Marker({
-      position: pos,
-      map: map,
-      title: res[i].name
-    });
-    markersArray.push(marker);
+    // place marker at each site
+    placeMarker(res[i]);    
+
+    // Build sites array
+    var site = {x: res[i].longitude, y: res[i].latitude};
+    sites.push(site);
+  }
+
+  var diagram = calculateVoronoi(sites);
+  drawVoronoi(diagram);
+}
+
+function placeMarker(zone)
+{
+  var pos = new google.maps.LatLng(zone.latitude, zone.longitude);
+  var marker = new google.maps.Marker({
+    position: pos,
+    map: map,
+    title: zone.name
+  });
+  markersArray.push(marker);
+}
+
+function calculateVoronoi(sites)
+{
+  var mb = map.getBounds();
+  var bbox = {
+    xl: mb.getSouthWest().lng(),
+    xr: mb.getNorthEast().lng(),
+    yt: mb.getSouthWest().lat(),
+    yb: mb.getNorthEast().lat()
+  };
+
+  //console.log("bbox: " + JSON.stringify(bbox));
+  //console.log("sites: " + JSON.stringify(sites));
+
+  var voronoi = new Voronoi();
+  return voronoi.compute(sites, bbox);
+}
+
+function drawVoronoi(diagram)
+{
+  for(var i = 0; i < diagram.cells.length; i++) {
+    var polyCoords = [];
+    var cell = diagram.cells[i];
+    //console.log("cell: " + JSON.stringify(cell));
+    if (cell.halfedges.length > 0) {
+      for (var c = 0; c < cell.halfedges.length; c++) {
+        var edge = cell.halfedges[c];
+        var coord = new google.maps.LatLng(edge.getStartpoint().y, edge.getStartpoint().x);
+        polyCoords.push(coord);
+      }
+      // Close the loop
+      var edge = cell.halfedges[0];
+      var coord = new google.maps.LatLng(edge.getStartpoint().y, edge.getStartpoint().x);
+      polyCoords.push(coord);
+
+      console.log("poly: " + JSON.stringify(polyCoords));      
+
+      var polygon = new google.maps.Polygon({
+        paths: polyCoords,
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 0.15
+      });
+
+      polygon.setMap(map);
+      markersArray.push(polygon);
+    }
   }
 }
 
+// function draw() {
+//   var triangleCoords = [
+//   new google.maps.LatLng(59.346356, 17.909285),
+//   new google.maps.LatLng(59.344356, 17.907285),
+//   new google.maps.LatLng(59.344356, 17.911285),
+//   new google.maps.LatLng(59.346356, 17.909285)
+//   ];
 
-function draw() {
-  var triangleCoords = [
-  new google.maps.LatLng(59.346356, 17.909285),
-  new google.maps.LatLng(59.344356, 17.907285),
-  new google.maps.LatLng(59.344356, 17.911285),
-  new google.maps.LatLng(59.346356, 17.909285)
-  ];
+//   bermudaTriangle = new google.maps.Polygon({
+//     paths: triangleCoords,
+//     strokeColor: '#FF0000',
+//     strokeOpacity: 0.8,
+//     strokeWeight: 2,
+//     fillColor: '#FF0000',
+//     fillOpacity: 0.35
+//   });
 
-  bermudaTriangle = new google.maps.Polygon({
-    paths: triangleCoords,
-    strokeColor: '#FF0000',
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: '#FF0000',
-    fillOpacity: 0.35
-  });
+//   bermudaTriangle.setMap(map);
 
-  bermudaTriangle.setMap(map);
-
-}
+// }
 
 function clearOverlays() {
   for (var i = 0; i < markersArray.length; i++ ) {
@@ -99,3 +165,5 @@ function getDistance(lat1, lng1, lat2, lng2)
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
+
