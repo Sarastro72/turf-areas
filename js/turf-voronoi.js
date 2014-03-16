@@ -1,12 +1,23 @@
-// Constants
-var LOAD_DELAY=500;
+// ---- Constants ----
+// buffer time between map change and reload
+var LOAD_DELAY=500;   // in milliseconds
+// margin around viewport where zones are loaded and calculated
+var LOAD_MARGIN=0.5;   // in kilometers
 
-// Variables
+// ---- Variables ----
 var map;
 var zones;
 var markersArray = [];
 var loadTimer = null;
 
+// ---- Prototypes ----
+if (typeof(Number.prototype.toRad) === "undefined") {
+  Number.prototype.toRad = function() {
+    return this * Math.PI / 180;
+  }
+}
+
+// ---- Code ----
 function initialize() {
   var mapOptions = {
     center: new google.maps.LatLng(59.345356, 17.909285),
@@ -23,12 +34,42 @@ function initialize() {
   });
 }
 
+function calculateMargins(bbox) {
+    var horizontalDistance = calculateDistance(
+    bbox.getNorthEast().lat(),
+    bbox.getNorthEast().lng(),
+    bbox.getNorthEast().lat(),
+    bbox.getSouthWest().lng()
+    );
+  var verticalDistance = calculateDistance(
+    bbox.getNorthEast().lat(),
+    bbox.getNorthEast().lng(),
+    bbox.getSouthWest().lat(),
+    bbox.getNorthEast().lng()
+    );
+
+  console.log("hDist: " + horizontalDistance);
+  console.log("vDist: " + verticalDistance);
+
+  // Doesn't handle cross datezone
+  kilometerDLat = (bbox.getNorthEast().lng() - bbox.getSouthWest().lng()) / horizontalDistance;
+  loadMarginLat = kilometerDLat * LOAD_MARGIN;
+  kilometerDLng = (bbox.getNorthEast().lng() - bbox.getSouthWest().lng()) / verticalDistance;
+  loadMarginLng = kilometerDLng * LOAD_MARGIN;
+
+  var m = {loadMarginLat: loadMarginLat, loadMarginLng: loadMarginLng};
+  return m;
+}
+
+
 function loadZones() {
   var bbox = map.getBounds();
 
+  var m = calculateMargins(bbox);
+
   var data = [{
-    "northEast" : {"latitude":bbox.getNorthEast().lat(), "longitude":bbox.getNorthEast().lng()},
-    "southWest" : {"latitude":bbox.getSouthWest().lat(), "longitude":bbox.getSouthWest().lng()}
+    "northEast" : {"latitude":bbox.getNorthEast().lat() + m.loadMarginLat, "longitude":bbox.getNorthEast().lng() + m.loadMarginLng},
+    "southWest" : {"latitude":bbox.getSouthWest().lat() - m.loadMarginLat, "longitude":bbox.getSouthWest().lng() - m.loadMarginLng}
   }];
 
   clearOverlays();
@@ -88,11 +129,12 @@ function placeMarker(zone)
 function calculateVoronoi(sites)
 {
   var mb = map.getBounds();
+  var m = calculateMargins(mb);
   var bbox = {
-    xl: mb.getSouthWest().lng(),
-    xr: mb.getNorthEast().lng(),
-    yt: mb.getSouthWest().lat(),
-    yb: mb.getNorthEast().lat()
+    xl: mb.getSouthWest().lng() - m.loadMarginLng,
+    xr: mb.getNorthEast().lng() + m.loadMarginLng,
+    yt: mb.getSouthWest().lat() - m.loadMarginLat,
+    yb: mb.getNorthEast().lat() + m.loadMarginLat
   };
 
   //console.log("bbox: " + JSON.stringify(bbox));
@@ -118,8 +160,6 @@ function drawVoronoi(diagram)
       var edge = cell.halfedges[0];
       var coord = new google.maps.LatLng(edge.getStartpoint().y, edge.getStartpoint().x);
       polyCoords.push(coord);
-
-      console.log("poly: " + JSON.stringify(polyCoords));      
 
       var polygon = new google.maps.Polygon({
         paths: polyCoords,
@@ -164,13 +204,19 @@ function clearOverlays() {
   markersArray = [];
 }
 
-function getDistance(lat1, lng1, lat2, lng2)
+function calculateDistance(lat1, lng1, lat2, lng2)
 {
   // formula from http://www.movable-type.co.uk/scripts/latlong.html
-  var R = 6371; // km
-  var d = Math.acos(Math.sin(lat1)*Math.sin(lat2) + 
-    Math.cos(lat1)*Math.cos(lat2) *
-    Math.cos(lng2-lng1)) * R;
+  // var R = 6371; // km
+  // var d = Math.acos(Math.sin(lat1.toRad())*Math.sin(lat2.toRad()) + 
+  //   Math.cos(lat1.toRad())*Math.cos(lat2.toRad()) *
+  //   Math.cos(lng2-lng1).toRad()) * R;
+  var R = 111.111;
+  var x = (lng2-lng1) * Math.cos((lat1+lat2).toRad()/2);
+  var y = (lat2-lat1);
+  var d = Math.sqrt(x*x + y*y) * R;
+
+  return d;
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
