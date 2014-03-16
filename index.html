@@ -10,20 +10,74 @@
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcqcxXmUWXpt-iOujOro-aTZuIPcvpcyM&sensor=false">
     </script>
+    <script type="text/javascript" src="js/lib/jquery/jquery-1.11.0.min.js"></script>
     <script type="text/javascript">
       
       var map;
+      var zones;
+      var markersArray = [];
 
       function initialize() {
         var mapOptions = {
           center: new google.maps.LatLng(59.345356, 17.909285),
-          zoom: 14
+          zoom: 15
         };
         map = new google.maps.Map(document.getElementById("map-canvas"),
             mapOptions);
 
-        draw();
+        google.maps.event.addListener(map, "bounds_changed", loadZones);
       }
+
+      function loadZones() {
+        var bbox = map.getBounds();
+        // alert("bbox: " + bbox.getNorthEast().lat()); //JSON.stringify(bbox));
+        var data = [{
+            "northEast" : {"latitude":bbox.getNorthEast().lat(), "longitude":bbox.getNorthEast().lng()},
+            "southWest" : {"latitude":bbox.getSouthWest().lat(), "longitude":bbox.getSouthWest().lng()}
+        }];
+        // var data = [{"id": 139}];
+
+        //alert("data: " + JSON.stringify(data));
+        clearOverlays();
+        $.ajax({
+          type: "POST",
+          url: "http://api.turfgame.com/v4/zones",
+          contentType: "application/json",
+          data: JSON.stringify(data)
+        })
+        .done(function(res) {
+          for (var i = 0; i < res.length; i++) {
+            var pos = new google.maps.LatLng(res[i].latitude, res[i].longitude);
+            var marker = new google.maps.Marker({
+                position: pos,
+                map: map,
+                title: res[i].name
+            });
+            markersArray.push(marker);
+          }
+        })
+        .fail(function(res) {
+          alert("failed: " + JSON.stringify(res));
+        });
+
+
+
+// [{"region":{"id":141,"name":"Stockholm","country":"se"},
+//   "id":139,
+//   "currentOwner":{"id":9241,"name":"speedmaster100"},
+//   "dateLastTaken":"2014-03-15T21:07:12+0000",
+//   "totalTakeovers":6590,
+//   "takeoverPoints":65,
+//   "name":"BearZone",
+//   "pointsPerHour":9,
+//   "dateCreated":"2010-09-04T16:41:37+0000",
+//   "longitude":18.073934,
+//   "latitude":59.31514
+// }]
+
+      }
+
+
 
       function draw() {
         var triangleCoords = [
@@ -62,6 +116,13 @@
         });
 
         bermudaTriangle2.setMap(map);
+      }
+
+      function clearOverlays() {
+        for (var i = 0; i < markersArray.length; i++ ) {
+          markersArray[i].setMap(null);
+        }
+        markersArray = [];
       }
 
       function getDistance(lat1, lng1, lat2, lng2)
