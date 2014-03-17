@@ -6,7 +6,7 @@ var LOAD_MARGIN=0.5;   // in kilometers
 
 // ---- Variables ----
 var map;
-var zones;
+var zones = {};
 var markersArray = [];
 var loadTimer = null;
 
@@ -14,6 +14,20 @@ var loadTimer = null;
 if (typeof(Number.prototype.toRad) === "undefined") {
   Number.prototype.toRad = function() {
     return this * Math.PI / 180;
+  }
+}
+
+if (typeof(String.prototype.hashCode) === "undefined") {
+  // from http://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript-jquery
+  String.prototype.hashCode = function(){
+      var hash = 0x55555555, i, char;
+      if (this.length == 0) return hash;
+      for (i = 0, l = this.length; i < l; i++) {
+          char  = this.charCodeAt(i);
+          hash  = ((hash<<5)-hash)+char;
+          hash |= 0; // Convert to 32bit integer
+      }
+      return hash;
   }
 }
 
@@ -35,7 +49,7 @@ function initialize() {
 }
 
 function calculateMargins(bbox) {
-    var horizontalDistance = calculateDistance(
+  var horizontalDistance = calculateDistance(
     bbox.getNorthEast().lat(),
     bbox.getNorthEast().lng(),
     bbox.getNorthEast().lat(),
@@ -101,9 +115,10 @@ function loadZones() {
 // }]
 function handleZoneResult(res) {
   var sites = [];
+  zones = {};
   for (var i = 0; i < res.length; i++) {
     // place marker at each site
-    placeMarker(res[i]);    
+    storeZone(res[i]);
 
     // Build sites array
     var site = {x: res[i].longitude, y: res[i].latitude};
@@ -114,13 +129,35 @@ function handleZoneResult(res) {
   drawVoronoi(diagram);
 }
 
+function makeHString(lat, lng)
+{
+  return "[" + lat + "," + lng + "]";
+}
+
+function storeZone(zone)
+{
+  var hstring = makeHString(zone.latitude, zone.longitude);
+  zones[hstring] = zone;
+}
+
+function lookupZone(lat, lng)
+{
+  var hstring = makeHString(lat, lng);
+  return zones[hstring];
+}
+
 function placeMarker(zone)
 {
   var pos = new google.maps.LatLng(zone.latitude, zone.longitude);
+  var owner = "-";
+  if (zone.currentOwner != null) {
+    owner = zone.currentOwner.name;
+  }
   var marker = new google.maps.Marker({
     position: pos,
     map: map,
-    title: zone.name
+    icon: "img/red_dot.png",
+    title: "Name: " + zone.name + "\n Owner: " + owner
   });
   markersArray.push(marker);
 }
@@ -157,13 +194,19 @@ function drawVoronoi(diagram)
       var coord = new google.maps.LatLng(edge.getStartpoint().y, edge.getStartpoint().x);
       polyCoords.push(coord);
 
+      var zone = lookupZone(cell.site.y, cell.site.x);
+      var col = colorFromZone(zone);
+      console.log("col: " + col);
+
+      placeMarker(zone);    
       var polygon = new google.maps.Polygon({
         paths: polyCoords,
-        strokeColor: '#FF0000',
-        strokeOpacity: 0.8,
+        strokeColor: col,
+        strokeOpacity: 0.5,
         strokeWeight: 2,
-        fillColor: '#FF0000',
-        fillOpacity: 0.15
+        fillColor: col,
+        fillOpacity: 0.15,
+        title: zone.name
       });
 
       polygon.setMap(map);
@@ -192,6 +235,69 @@ function calculateDistance(lat1, lng1, lat2, lng2)
   var d = Math.sqrt(x*x + y*y) * R;
 
   return d;
+}
+
+function colorFromZone(zone) {
+  if (zone.currentOwner == null) {
+    return "#DDDDDD";
+  }
+  return colorFromString(zone.currentOwner.name);
+}
+
+var B = 0;       // saturation
+var T = 0xFF;    // brightness
+var D = T - B;
+function colorFromString(str) {
+  var hash = str.hashCode();
+  // var r = hash & 0xFF;
+  // var g = (hash >> 8) & 0xFF;
+  // var b = (hash >> 16 ) & 0xFF;
+  var hue = (hash & 0x3ff);
+  var num = 0x3ff / hue * 6;
+  var pattern = Math.floor(num);  // 0-5
+  var scale = Math.floor((num - pattern) * D + 0.5); 
+
+  console.log(pattern: " + pattern + ", scale: " + scale);
+
+  var r = 0, g = 0, b = 0;
+  switch (pattern)
+  {
+    case 0:
+      r = 0xff;
+      g = B + scale;
+      break;
+    case 1:
+      r = B + D - scale;
+      g = 0xff;
+      break;
+    case 2:
+      g = 0xff;
+      b = B + scale;
+      break;
+    case 3:
+      g = B + D - scale;
+      b = 0xff;
+      break;
+    case 4:
+      r = B + scale;
+      b = 0xff;
+      break;
+    case 5:
+      r = 0xff;
+      b = B + D - scale;
+      break;
+  }
+  return "#" + getHexByte(r) + getHexByte(g) + getHexByte(b);
+}
+
+function getHexByte(num)
+{
+  var n = num & 0xff;
+  if (n < 16) {
+    return "0" + n.toString(16);
+  } else {
+    return n.toString(16);
+  }  
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
