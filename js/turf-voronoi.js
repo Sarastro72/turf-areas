@@ -61,7 +61,6 @@ function calculateMargins(bbox) {
   return m;
 }
 
-
 function loadZones() {
   var bbox = map.getBounds();
 
@@ -137,9 +136,6 @@ function calculateVoronoi(sites)
     yb: mb.getNorthEast().lat() + m.loadMarginLat
   };
 
-  //console.log("bbox: " + JSON.stringify(bbox));
-  //console.log("sites: " + JSON.stringify(sites));
-
   var voronoi = new Voronoi();
   return voronoi.compute(sites, bbox);
 }
@@ -149,7 +145,7 @@ function drawVoronoi(diagram)
   for(var i = 0; i < diagram.cells.length; i++) {
     var polyCoords = [];
     var cell = diagram.cells[i];
-    //console.log("cell: " + JSON.stringify(cell));
+
     if (cell.halfedges.length > 0) {
       for (var c = 0; c < cell.halfedges.length; c++) {
         var edge = cell.halfedges[c];
@@ -175,27 +171,6 @@ function drawVoronoi(diagram)
     }
   }
 }
-
-// function draw() {
-//   var triangleCoords = [
-//   new google.maps.LatLng(59.346356, 17.909285),
-//   new google.maps.LatLng(59.344356, 17.907285),
-//   new google.maps.LatLng(59.344356, 17.911285),
-//   new google.maps.LatLng(59.346356, 17.909285)
-//   ];
-
-//   bermudaTriangle = new google.maps.Polygon({
-//     paths: triangleCoords,
-//     strokeColor: '#FF0000',
-//     strokeOpacity: 0.8,
-//     strokeWeight: 2,
-//     fillColor: '#FF0000',
-//     fillOpacity: 0.35
-//   });
-
-//   bermudaTriangle.setMap(map);
-
-// }
 
 function clearOverlays() {
   for (var i = 0; i < markersArray.length; i++ ) {
