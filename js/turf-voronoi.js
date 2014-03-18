@@ -76,6 +76,7 @@ function calculateMargins(bbox) {
 }
 
 function loadZones() {
+  initTime();
   var bbox = map.getBounds();
 
   var m = calculateMargins(bbox);
@@ -99,6 +100,8 @@ function loadZones() {
   .fail(function(res) {
     alert("failed: " + JSON.stringify(res));
   });
+
+  measureTime("load initiated");
 }
 
 // [{"region":{"id":141,"name":"Stockholm","country":"se"},
@@ -114,6 +117,7 @@ function loadZones() {
 //   "latitude":59.31514
 // }]
 function handleZoneResult(res) {
+  measureTime("zones loaded");
   var sites = [];
   zones = {};
   for (var i = 0; i < res.length; i++) {
@@ -126,6 +130,7 @@ function handleZoneResult(res) {
   }
 
   var diagram = calculateVoronoi(sites);
+  measureTime("voronoi calculated");
   drawVoronoi(diagram);
 }
 
@@ -196,13 +201,12 @@ function drawVoronoi(diagram)
 
       var zone = lookupZone(cell.site.y, cell.site.x);
       var col = colorFromZone(zone);
-      console.log("col: " + col);
 
       placeMarker(zone);    
       var polygon = new google.maps.Polygon({
         paths: polyCoords,
-        strokeColor: col,
-        strokeOpacity: 0.5,
+        strokeColor: "#000000",
+        strokeOpacity: 0.2,
         strokeWeight: 2,
         fillColor: col,
         fillOpacity: 0.15,
@@ -213,6 +217,7 @@ function drawVoronoi(diagram)
       markersArray.push(polygon);
     }
   }
+  measureTime("cells drawn");
 }
 
 function clearOverlays() {
@@ -241,6 +246,7 @@ function colorFromZone(zone) {
   if (zone.currentOwner == null) {
     return "#DDDDDD";
   }
+
   return colorFromString(zone.currentOwner.name);
 }
 
@@ -253,11 +259,13 @@ function colorFromString(str) {
   // var g = (hash >> 8) & 0xFF;
   // var b = (hash >> 16 ) & 0xFF;
   var hue = (hash & 0x3ff);
-  var num = 0x3ff / hue * 6;
+  var num = hue / 0x3ff * 6;
   var pattern = Math.floor(num);  // 0-5
   var scale = Math.floor((num - pattern) * D + 0.5); 
 
-  console.log(pattern: " + pattern + ", scale: " + scale);
+  // console.log("str: " + str);
+  // console.log("hash: " + hash.toString(16) + ", hue: " + hue.toString(16) + ", num: " + num);
+  // console.log("pattern: " + pattern + ", scale: " + scale);
 
   var r = 0, g = 0, b = 0;
   switch (pattern)
@@ -299,6 +307,25 @@ function getHexByte(num)
     return n.toString(16);
   }  
 }
+
+// profiling
+var _starttime;
+var _lasttime;
+
+function initTime() {
+  _starttime = (new Date()).getTime();
+  _lasttime = _starttime;
+  console.log("timer initialized " + _starttime);
+}
+
+function measureTime(point)
+{
+  var time = (new Date()).getTime();
+  console.log(point + ": " + (time - _starttime) +  " D " + (time - _lasttime));
+  _lasttime = time;
+}
+
+
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
