@@ -9,4 +9,4 @@ TODO:
 * Player info panel (player, color on map, # zones on map)
 * Remove XSS limitation
 * Show players on map
-* -Borders between players zones-
+* ~~Borders between players zones~~
