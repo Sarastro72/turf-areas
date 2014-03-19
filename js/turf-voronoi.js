@@ -262,13 +262,11 @@ function colorFromZone(zone) {
 var B = 0;       // saturation
 var T = 0xFF;    // brightness
 var D = T - B;
+var G = 0x2f;   // color granularity must be 2^x - 1
 function colorFromString(str) {
   var hash = str.hashCode();
-  // var r = hash & 0xFF;
-  // var g = (hash >> 8) & 0xFF;
-  // var b = (hash >> 16 ) & 0xFF;
-  var hue = (hash & 0x3ff);
-  var num = hue / 0x3ff * 6;
+  var hue = (hash & G);
+  var num = hue / (G + 1) * 6;
   var pattern = Math.floor(num);  // 0-5
   var scale = Math.floor((num - pattern) * D + 0.5); 
 
