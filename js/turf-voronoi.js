@@ -216,7 +216,7 @@ function drawVoronoi(diagram)
         paths: polyCoords,
         strokeColor: "#000000",
         strokeOpacity: 0.2,
-        strokeWeight: 2,
+        strokeWeight: 1,
         fillColor: col,
         fillOpacity: 0.15,
         title: zone.name
@@ -253,7 +253,7 @@ function calculateDistance(lat1, lng1, lat2, lng2)
 
 function colorFromZone(zone) {
   if (zone.currentOwner == null) {
-    return "#DDDDDD";
+    return "#FFFFFF";
   }
 
   return colorFromString(zone.currentOwner.name);
