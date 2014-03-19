@@ -162,9 +162,9 @@ function storeZone(zone)
   zones[hstring] = zone;
 }
 
-function lookupZone(lat, lng)
+function lookupZone(site)
 {
-  var hstring = makeHString(lat, lng);
+  var hstring = makeHString(site.y, site.x);
   return zones[hstring];
 }
 
@@ -216,7 +216,7 @@ function drawVoronoi(diagram)
       var coord = new google.maps.LatLng(edge.getStartpoint().y, edge.getStartpoint().x);
       polyCoords.push(coord);
 
-      var zone = lookupZone(cell.site.y, cell.site.x);
+      var zone = lookupZone(cell.site);
       var col = colorFromZone(zone);
 
       placeMarker(zone);    
@@ -235,6 +235,44 @@ function drawVoronoi(diagram)
     }
   }
   measureTime("cells drawn");
+
+  drawBoundaries(diagram);
+}
+
+function drawBoundaries(diagram)
+{
+  for (var i = 0; i < diagram.edges.length; i++)
+  {
+    var edge = diagram.edges[i];
+
+    // Skip if this is an edge zone
+    if (edge.lSite == null || edge.rSite == null) {
+      continue;
+    }
+
+    lzone = lookupZone(edge.lSite);
+    lname = lzone.currentOwner == null ? null : lzone.currentOwner.name;
+    rzone = lookupZone(edge.rSite);
+    rname = rzone.currentOwner == null ? null : rzone.currentOwner.name;
+
+    // Skip if owner is the same
+    if (lname == rname) {
+      continue;
+    }
+
+    // Draw a line
+    var start = new google.maps.LatLng(edge.va.y, edge.va.x);
+    var stop = new google.maps.LatLng(edge.vb.y, edge.vb.x);
+    coordinates = [start, stop];
+    var line = new google.maps.Polyline({
+      path: coordinates,
+      strokeColor: "#000000",
+      strokeOpacity: 1,
+      strokeWeight: 1,
+    });
+    line.setMap(map);
+    markersArray.push(line);
+  }
 }
 
 function clearOverlays() {
