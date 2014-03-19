@@ -95,7 +95,6 @@ function loadZones() {
     "southWest" : {"latitude":bbox.getSouthWest().lat() - m.loadMarginLat, "longitude":bbox.getSouthWest().lng() - m.loadMarginLng}
   }];
 
-  clearOverlays();
   $.ajax({
     type: "POST",
     crossDomain: true,
@@ -140,6 +139,7 @@ function handleZoneResult(res) {
 
   var diagram = calculateVoronoi(sites);
   measureTime("voronoi calculated");
+  clearOverlays();
   drawVoronoi(diagram);
 }
 
