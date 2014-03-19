@@ -41,9 +41,13 @@ function initialize() {
     ]
   }];
 
+  var lat = 59.32893;
+  var lng = 18.06491;
+  var location = $.url().param('location');
+
   var mapOptions = {
-    center: new google.maps.LatLng(59.345356, 17.909285),
-    zoom: 15,
+    center: new google.maps.LatLng(lat, lng),
+    zoom: 14,
     styles: styles
   };
   map = new google.maps.Map(document.getElementById("map-canvas"),
@@ -55,6 +59,10 @@ function initialize() {
     }
     loadTimer = setTimeout(loadZones, LOAD_DELAY);
   });
+
+  if (location != null) {
+    gotoLocation(location);
+  }
 }
 
 function calculateMargins(bbox) {
@@ -250,6 +258,23 @@ function calculateDistance(lat1, lng1, lat2, lng2)
 
   return d;
 }
+
+var geocoder = new google.maps.Geocoder();
+function gotoLocation(location) {
+  geocoder.geocode(
+        {'address': location}, 
+        function(results, status) { 
+            if (status == google.maps.GeocoderStatus.OK) { 
+                var loc = results[0].geometry.location;
+                console.log("moving to " + location + " @" + loc.lat() + ", " + loc.lng());
+                map.panTo(loc);
+            } 
+            else {
+                alert(location + " not found: " + status); 
+            } 
+        }
+    );
+} 
 
 function colorFromZone(zone) {
   if (zone.currentOwner == null) {
