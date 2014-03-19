@@ -33,9 +33,18 @@ if (typeof(String.prototype.hashCode) === "undefined") {
 
 // ---- Code ----
 function initialize() {
+  // Reduce saturation of the map
+  var styles = [
+  {
+    stylers: [
+      { saturation: -80 }
+    ]
+  }];
+
   var mapOptions = {
     center: new google.maps.LatLng(59.345356, 17.909285),
-    zoom: 15
+    zoom: 15,
+    styles: styles
   };
   map = new google.maps.Map(document.getElementById("map-canvas"),
     mapOptions);
