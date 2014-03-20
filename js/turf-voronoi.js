@@ -137,7 +137,7 @@ function handleZoneResult(res) {
   var sites = [];
   zones = {};
   for (var i = 0; i < res.length; i++) {
-    // place marker at each site
+    //Store zone for later lookup
     storeZone(res[i]);
 
     // Build sites array
@@ -218,15 +218,19 @@ function drawVoronoi(diagram)
 
       var zone = lookupZone(cell.site);
       var col = colorFromZone(zone);
+      var opacity = 0.1;
+      if (col == "#FFFFFF") {  // hack!
+        opacity = 0;
+      }
 
       placeMarker(zone);    
       var polygon = new google.maps.Polygon({
         paths: polyCoords,
         strokeColor: "#000000",
-        strokeOpacity: 0.2,
+        strokeOpacity: 0.1,
         strokeWeight: 1,
         fillColor: col,
-        fillOpacity: 0.15,
+        fillOpacity: opacity,
         title: zone.name
       });
 
@@ -267,7 +271,7 @@ function drawBoundaries(diagram)
     var line = new google.maps.Polyline({
       path: coordinates,
       strokeColor: "#000000",
-      strokeOpacity: 1,
+      strokeOpacity: 0.5,
       strokeWeight: 1,
     });
     line.setMap(map);
