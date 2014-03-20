@@ -53,6 +53,9 @@ function initialize() {
   var lng = 18.06491;
   var location = $.url().param('location');
   selectedUser = $.url().param('user');
+  if (selectedUser != null) {
+    selectedUser = selectedUser.toLowerCase();
+  }
 
   var mapOptions = {
     center: new google.maps.LatLng(lat, lng),
@@ -267,9 +270,9 @@ function drawBoundaries(diagram)
     }
 
     lzone = lookupZone(edge.lSite);
-    lname = lzone.currentOwner == null ? null : lzone.currentOwner.name;
+    lname = lzone.currentOwner == null ? null : lzone.currentOwner.name.toLowerCase();
     rzone = lookupZone(edge.rSite);
-    rname = rzone.currentOwner == null ? null : rzone.currentOwner.name;
+    rname = rzone.currentOwner == null ? null : rzone.currentOwner.name.toLowerCase();
 
     // Skip if owner is the same
     if (lname == rname) {
