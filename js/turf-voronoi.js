@@ -9,6 +9,7 @@ var map;
 var zones = {};
 var markersArray = [];
 var loadTimer = null;
+var selectedUser;
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -44,6 +45,7 @@ function initialize() {
   var lat = 59.32893;
   var lng = 18.06491;
   var location = $.url().param('location');
+  selectedUser = $.url().param('user');
 
   var mapOptions = {
     center: new google.maps.LatLng(lat, lng),
@@ -133,7 +135,8 @@ function loadZones() {
 //   "latitude":59.31514
 // }]
 function handleZoneResult(res) {
-  measureTime("zones loaded");
+  console.log("Loaded " + res.length + " zones");
+  measureTime("Zones loaded");
   var sites = [];
   zones = {};
   for (var i = 0; i < res.length; i++) {
@@ -219,7 +222,8 @@ function drawVoronoi(diagram)
       var zone = lookupZone(cell.site);
       var col = colorFromZone(zone);
       var opacity = 0.1;
-      if (col == "#FFFFFF") {  // hack!
+      if (col == "-") {  // hack!
+        col = "#FFFFFF";
         opacity = 0;
       }
 
@@ -264,15 +268,26 @@ function drawBoundaries(diagram)
       continue;
     }
 
+    var col = "#000000";
+    var opacity = 0.5;
+    var weight = 1;
+    if (selectedUser != null && (lname == selectedUser || rname == selectedUser))
+    {
+      col = "#FFFFFF";
+      opacity = 1;
+      weight = 4;
+    }
+
     // Draw a line
     var start = new google.maps.LatLng(edge.va.y, edge.va.x);
     var stop = new google.maps.LatLng(edge.vb.y, edge.vb.x);
     coordinates = [start, stop];
     var line = new google.maps.Polyline({
       path: coordinates,
-      strokeColor: "#000000",
-      strokeOpacity: 0.5,
-      strokeWeight: 1,
+      strokeColor: col,
+      strokeOpacity: opacity,
+      strokeWeight: weight,
+      zIndex: 2
     });
     line.setMap(map);
     markersArray.push(line);
@@ -320,7 +335,7 @@ function gotoLocation(location) {
 
 function colorFromZone(zone) {
   if (zone.currentOwner == null) {
-    return "#FFFFFF";
+    return "-";
   }
 
   return colorFromString(zone.currentOwner.name);
@@ -395,7 +410,7 @@ function initTime() {
 function measureTime(point)
 {
   var time = (new Date()).getTime();
-  console.log(point + ": " + (time - _starttime) +  " D " + (time - _lasttime));
+  console.log("MT: " + point + ": " + (time - _lasttime) +  " (" + (time - _starttime) + ")");
   _lasttime = time;
 }
 
