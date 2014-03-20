@@ -3,6 +3,13 @@
 var LOAD_DELAY=500;   // in milliseconds
 // margin around viewport where zones are loaded and calculated
 var LOAD_MARGIN=0.5;   // in kilometers
+// marker icon representing a zone
+var ZONE_ICON = {
+  url: "img/red_dot.png",
+  size: new google.maps.Size(10, 10),
+  origin: new google.maps.Point(0,0),
+  anchor: new google.maps.Point(5, 5)
+};
 
 // ---- Variables ----
 var map;
@@ -178,10 +185,11 @@ function placeMarker(zone)
   if (zone.currentOwner != null) {
     owner = zone.currentOwner.name;
   }
+
   var marker = new google.maps.Marker({
     position: pos,
     map: map,
-    icon: "img/red_dot.png",
+    icon: ZONE_ICON,
     title: "Name: " + zone.name + "\n Owner: " + owner
   });
   markersArray.push(marker);
