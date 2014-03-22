@@ -8,6 +8,6 @@ TODO:
 - [ ] Search function (zone name, location)  _partially fixed_
 - [ ] Player info panel (player, color on map, # zones on map)
 - [ ] Remove XSS limitation
-- [ ] Show players on map
+- [x] Show players on map
 - [x] Highlight selected players zones
 - [x] Borders between players zones

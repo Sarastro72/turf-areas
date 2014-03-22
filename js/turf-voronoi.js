@@ -1,8 +1,13 @@
 // ---- Constants ----
 // buffer time between map change and reload
 var LOAD_DELAY=500;   // in milliseconds
+
+// Delay between reloading players
+var PLAYER_UPDATE_INTERVAL=10000;   // in milliseconds
+
 // margin around viewport where zones are loaded and calculated
 var LOAD_MARGIN=0.5;   // in kilometers
+
 // marker icon representing a zone
 var ZONE_ICON = {
   url: "img/red_dot.png",
@@ -10,6 +15,7 @@ var ZONE_ICON = {
   origin: new google.maps.Point(0,0),
   anchor: new google.maps.Point(5, 5)
 };
+
 // Marker representing a player
 var PLAYER_ICON = {
   url: "img/player.png",
@@ -23,7 +29,9 @@ var PLAYER_ICON = {
 var map;
 var zones = {};
 var markersArray = [];
+var playersArray = [];
 var loadTimer = null;
+var playerInterval = null;
 var selectedUser;
 var matchedUser;
 
@@ -58,6 +66,7 @@ function initialize() {
     ]
   }];
 
+  // Default location Stockholm
   var lat = 59.32893;
   var lng = 18.06491;
   var location = $.url().param('location');
@@ -80,6 +89,8 @@ function initialize() {
     }
     loadTimer = setTimeout(loadZones, LOAD_DELAY);
   });
+
+  playerInterval = setInterval(loadPlayers, PLAYER_UPDATE_INTERVAL)
 
   if (location != null) {
     gotoLocation(location);
@@ -109,24 +120,33 @@ function calculateMargins(bbox) {
   kilometerDLng = (bbox.getNorthEast().lng() - bbox.getSouthWest().lng()) / verticalDistance;
   loadMarginLng = kilometerDLng * LOAD_MARGIN;
 
-  var m = {loadMarginLat: loadMarginLat, loadMarginLng: loadMarginLng};
-  return m;
+
+  var mbbox = {
+    northEast: {
+      lat: bbox.getNorthEast().lat() + loadMarginLat,
+      lng: bbox.getNorthEast().lng() + loadMarginLng
+    },
+    southWest: {
+      lat: bbox.getSouthWest().lat() - loadMarginLat,
+      lng: bbox.getSouthWest().lng() - loadMarginLng
+    }
+  };
+
+  return mbbox;
 }
 
 function loadZones() {
   initTime();
   var bbox = map.getBounds();
-
-  var m = calculateMargins(bbox);
+  var mbbox = calculateMargins(bbox);
 
   var data = [{
-    "northEast" : {"latitude":bbox.getNorthEast().lat() + m.loadMarginLat, "longitude":bbox.getNorthEast().lng() + m.loadMarginLng},
-    "southWest" : {"latitude":bbox.getSouthWest().lat() - m.loadMarginLat, "longitude":bbox.getSouthWest().lng() - m.loadMarginLng}
+    "northEast" : {"latitude": mbbox.northEast.lat, "longitude": mbbox.northEast.lng},
+    "southWest" : {"latitude": mbbox.southWest.lat, "longitude": mbbox.southWest.lng}
   }];
 
   $.ajax({
     type: "POST",
-    crossDomain: true,
     url: "http://api.turfgame.com/v4/zones",
     contentType: "application/json",
     data: JSON.stringify(data)
@@ -141,18 +161,6 @@ function loadZones() {
   measureTime("load initiated");
 }
 
-// [{"region":{"id":141,"name":"Stockholm","country":"se"},
-//   "id":139,
-//   "currentOwner":{"id":9241,"name":"speedmaster100"},
-//   "dateLastTaken":"2014-03-15T21:07:12+0000",
-//   "totalTakeovers":6590,
-//   "takeoverPoints":65,
-//   "name":"BearZone",
-//   "pointsPerHour":9,
-//   "dateCreated":"2010-09-04T16:41:37+0000",
-//   "longitude":18.073934,
-//   "latitude":59.31514
-// }]
 function handleZoneResult(res) {
   console.log("Loaded " + res.length + " zones");
   measureTime("Zones loaded");
@@ -171,6 +179,49 @@ function handleZoneResult(res) {
   measureTime("voronoi calculated");
   clearOverlays();
   drawVoronoi(diagram);
+  loadPlayers();
+}
+
+function loadPlayers() {
+  $.ajax({
+    type: "GET",
+    url: "http://api.turfgame.com/v4/users/location",
+  })
+  .done(function(res) {
+    handlePlayerResult(res);
+  })
+  .fail(function(res) {
+    alert("failed getting players: " + JSON.stringify(res));
+  });
+}
+
+function handlePlayerResult (res) {
+  var bbox = getBoundsWithMargin();
+  clearPlayers();
+  
+  for (var i = 0; i < res.length; i++) {
+    var player = res[i];
+    // Place players that are within the bounds
+    if (player.latitude > bbox.southWest.lat &&
+        player.latitude < bbox.northEast.lat &&
+        player.longitude > bbox.southWest.lng &&
+        player.longitude < bbox.northEast.lng)
+    {
+      var pos = new google.maps.LatLng(player.latitude, player.longitude);
+      var marker = new google.maps.Marker({
+        position: pos,
+        map: map,
+        icon: PLAYER_ICON,
+        title: player.name
+      });
+      playersArray.push(marker);      
+    }
+  }
+}
+
+function getBoundsWithMargin()
+{
+  return calculateMargins(map.getBounds());
 }
 
 function makeHString(lat, lng)
@@ -209,13 +260,13 @@ function placeMarker(zone)
 
 function calculateVoronoi(sites)
 {
-  var mb = map.getBounds();
-  var m = calculateMargins(mb);
+  var bounds = map.getBounds();
+  var mbounds = calculateMargins(bounds);
   var bbox = {
-    xl: mb.getSouthWest().lng() - m.loadMarginLng,
-    xr: mb.getNorthEast().lng() + m.loadMarginLng,
-    yt: mb.getSouthWest().lat() - m.loadMarginLat,
-    yb: mb.getNorthEast().lat() + m.loadMarginLat
+    xl: mbounds.southWest.lng,
+    xr: mbounds.northEast.lng,
+    yt: mbounds.southWest.lat,
+    yb: mbounds.northEast.lat
   };
 
   var voronoi = new Voronoi();
@@ -328,6 +379,13 @@ function clearOverlays() {
     markersArray[i].setMap(null);
   }
   markersArray = [];
+}
+
+function clearPlayers() {
+  for (var i = 0; i < playersArray.length; i++ ) {
+    playersArray[i].setMap(null);
+  }
+  playersArray = [];
 }
 
 function calculateDistance(lat1, lng1, lat2, lng2)
