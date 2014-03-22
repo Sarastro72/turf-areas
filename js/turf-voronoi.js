@@ -10,6 +10,14 @@ var ZONE_ICON = {
   origin: new google.maps.Point(0,0),
   anchor: new google.maps.Point(5, 5)
 };
+// Marker representing a player
+var PLAYER_ICON = {
+  url: "img/player.png",
+  size: new google.maps.Size(35, 90),
+  origin: new google.maps.Point(0,0),
+  anchor: new google.maps.Point(8, 45),
+  scaledSize: new google.maps.Size(17, 45)
+};
 
 // ---- Variables ----
 var map;
