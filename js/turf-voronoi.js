@@ -17,6 +17,7 @@ var zones = {};
 var markersArray = [];
 var loadTimer = null;
 var selectedUser;
+var matchedUser;
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -270,9 +271,9 @@ function drawBoundaries(diagram)
     }
 
     lzone = lookupZone(edge.lSite);
-    lname = lzone.currentOwner == null ? null : lzone.currentOwner.name.toLowerCase();
+    lname = lzone.currentOwner == null ? "" : lzone.currentOwner.name;
     rzone = lookupZone(edge.rSite);
-    rname = rzone.currentOwner == null ? null : rzone.currentOwner.name.toLowerCase();
+    rname = rzone.currentOwner == null ? "" : rzone.currentOwner.name;
 
     // Skip if owner is the same
     if (lname == rname) {
@@ -282,9 +283,18 @@ function drawBoundaries(diagram)
     var col = "#000000";
     var opacity = 0.5;
     var weight = 1;
-    if (selectedUser != null && (lname == selectedUser || rname == selectedUser))
+    if (selectedUser != null 
+      && (lname.toLowerCase() == selectedUser
+      || rname.toLowerCase() == selectedUser))
     {
-      col = "#FFFFFF";
+      if (matchedUser == null) {
+        if (lname.toLowerCase() == selectedUser) {
+          matchedUser = lname;
+        } else {
+          matchedUser = rname;
+        }
+      }
+      col = colorFromStringHSV(matchedUser, 0x80, 0x40, 0x80);
       opacity = 1;
       weight = 4;
     }
@@ -352,50 +362,62 @@ function colorFromZone(zone) {
   return colorFromString(zone.currentOwner.name);
 }
 
-var B = 0;       // saturation
-var T = 0xFF;    // brightness
-var D = T - B;
-var G = 0x2f;   // color granularity must be 2^x - 1
 function colorFromString(str) {
-  var hash = str.hashCode();
-  var hue = (hash & G);
-  var num = hue / (G + 1) * 6;
-  var pattern = Math.floor(num);  // 0-5
-  var scale = Math.floor((num - pattern) * D + 0.5); 
+  return colorFromStringHSV(str, 0, 0xFF, 0xFF);
+}
 
-  // console.log("str: " + str);
-  // console.log("hash: " + hash.toString(16) + ", hue: " + hue.toString(16) + ", num: " + num);
+var G = 0x3f;   // color granularity must be 2^x - 1
+
+function colorFromStringHSV(str, h, s, v) {
+  var hash = str.hashCode();
+  var hue = Math.floor((hash & G) + (h * G / 0xFF)) & G;
+  var num = hue / (G + 1) * 6;
+  s = Math.floor((0xFF - s) * v / 0xFF);
+  var d = v - s;
+  var pattern = Math.floor(num);  // 0-5
+  var scale = Math.floor((num - pattern) * d + 0.5); 
+
+  // console.log("str: " + str + " h: " + h + " s: " + s + " v: " + v + " d: " + d);
+  // console.log("hash: " + hash.toString(16) + ", hue: " + hue + "/" + G + ", num: " + num);
   // console.log("pattern: " + pattern + ", scale: " + scale);
 
   var r = 0, g = 0, b = 0;
   switch (pattern)
   {
     case 0:
-      r = 0xff;
-      g = B + scale;
+      r = v;
+      g = s + scale;
+      b = s;
       break;
     case 1:
-      r = B + D - scale;
-      g = 0xff;
+      r = s + d - scale;
+      g = v;
+      b = s
       break;
     case 2:
-      g = 0xff;
-      b = B + scale;
+      r = s;
+      g = v;
+      b = s + scale;
       break;
     case 3:
-      g = B + D - scale;
-      b = 0xff;
+      r = s;
+      g = s + d - scale;
+      b = v;
       break;
     case 4:
-      r = B + scale;
-      b = 0xff;
+      r = s + scale;
+      g = s;
+      b = v;
       break;
     case 5:
-      r = 0xff;
-      b = B + D - scale;
+      r = v;
+      g = s;
+      b = s + d - scale;
       break;
   }
-  return "#" + getHexByte(r) + getHexByte(g) + getHexByte(b);
+  var col = "#" + getHexByte(r) + getHexByte(g) + getHexByte(b);
+  // console.log("col: " + col);
+  return col;
 }
 
 function getHexByte(num)
