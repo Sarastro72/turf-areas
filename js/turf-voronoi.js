@@ -137,25 +137,33 @@ function loadZones() {
   var bbox = map.getBounds();
   var mbbox = calculateMargins(bbox);
 
-  var data = [{
-    "northEast" : {"latitude": mbbox.northEast.lat, "longitude": mbbox.northEast.lng},
-    "southWest" : {"latitude": mbbox.southWest.lat, "longitude": mbbox.southWest.lng}
-  }];
+  var area = (mbbox.northEast.lat - mbbox.southWest.lat) * (mbbox.northEast.lng - mbbox.southWest.lng);
 
-  $.ajax({
-    type: "POST",
-    url: "http://api.turfgame.com/v4/zones",
-    contentType: "application/json",
-    data: JSON.stringify(data)
-  })
-  .done(function(res) {
-    handleZoneResult(res);
-  })
-  .fail(function(res) {
-    alert("failed: " + JSON.stringify(res));
-  });
+  if (area < 0.05) {
+    var data = [{
+      "northEast" : {"latitude": mbbox.northEast.lat, "longitude": mbbox.northEast.lng},
+      "southWest" : {"latitude": mbbox.southWest.lat, "longitude": mbbox.southWest.lng}
+    }];
 
-  measureTime("load initiated");
+    $.ajax({
+      type: "POST",
+      url: "http://api.turfgame.com/v4/zones",
+      contentType: "application/json",
+      data: JSON.stringify(data)
+    })
+    .done(function(res) {
+      handleZoneResult(res);
+    })
+    .fail(function(res) {
+      alert("failed: " + JSON.stringify(res));
+    });
+
+    measureTime("load initiated");
+  }
+  else
+  {
+    clearOverlays();
+  }
 }
 
 function handleZoneResult(res) {
