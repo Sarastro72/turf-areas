@@ -32,8 +32,8 @@ var markersArray = [];
 var playersArray = [];
 var loadTimer = null;
 var playerInterval = null;
-var selectedUser;
-var matchedUser;
+var selectedPlayer;
+var matchedPlayer;
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -70,10 +70,7 @@ function initialize() {
   var lat = 59.32893;
   var lng = 18.06491;
   var location = $.url().param('location');
-  selectedUser = $.url().param('user');
-  if (selectedUser != null) {
-    selectedUser = selectedUser.toLowerCase();
-  }
+  setSelectedPlayer($.url().param('player'));
 
   var mapOptions = {
     center: new google.maps.LatLng(lat, lng),
@@ -219,6 +216,15 @@ function handlePlayerResult (res) {
   }
 }
 
+function setSelectedPlayer(name) {
+  if (name != null)
+  {
+    console.log("Selecting player " + name);
+    selectedPlayer = name.toLowerCase();
+    matchedPlayer = null;    
+  }
+}
+
 function getBoundsWithMargin()
 {
   return calculateMargins(map.getBounds());
@@ -342,18 +348,18 @@ function drawBoundaries(diagram)
     var col = "#000000";
     var opacity = 0.5;
     var weight = 1;
-    if (selectedUser != null 
-      && (lname.toLowerCase() == selectedUser
-      || rname.toLowerCase() == selectedUser))
+    if (selectedPlayer != null 
+      && (lname.toLowerCase() == selectedPlayer
+      || rname.toLowerCase() == selectedPlayer))
     {
-      if (matchedUser == null) {
-        if (lname.toLowerCase() == selectedUser) {
-          matchedUser = lname;
+      if (matchedPlayer == null) {
+        if (lname.toLowerCase() == selectedPlayer) {
+          matchedPlayer = lname;
         } else {
-          matchedUser = rname;
+          matchedPlayer = rname;
         }
       }
-      col = colorFromStringHSV(matchedUser, 0x80, 0x40, 0x80);
+      col = colorFromStringHSV(matchedPlayer, 0x80, 0x40, 0x80);
       opacity = 1;
       weight = 4;
     }
