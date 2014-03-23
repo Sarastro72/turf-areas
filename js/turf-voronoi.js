@@ -87,8 +87,6 @@ function initialize() {
     loadTimer = setTimeout(loadZones, LOAD_DELAY);
   });
 
-  playerInterval = setInterval(loadPlayers, PLAYER_UPDATE_INTERVAL)
-
   if (location != null) {
     gotoLocation(location);
   }
@@ -164,6 +162,12 @@ function loadZones() {
   {
     clearOverlays();
   }
+
+  if (playerInterval == null)
+  {
+    playerInterval = setInterval(loadPlayers, PLAYER_UPDATE_INTERVAL);
+  }
+
 }
 
 function handleZoneResult(res) {
@@ -196,6 +200,8 @@ function loadPlayers() {
     handlePlayerResult(res);
   })
   .fail(function(res) {
+    clearInterval(playerInterval);
+    playerInterval = null;
     alert("failed getting players: " + JSON.stringify(res));
   });
 }
@@ -446,7 +452,7 @@ function colorFromString(str) {
   return colorFromStringHSV(str, 0, 0xFF, 0xFF);
 }
 
-var G = 0x3f;   // color granularity must be 2^x - 1
+var G = 0x1f;   // color granularity must be 2^x - 1
 
 function colorFromStringHSV(str, h, s, v) {
   var hash = str.hashCode();
