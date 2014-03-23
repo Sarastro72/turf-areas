@@ -106,8 +106,6 @@ function calculateMargins(bbox) {
     bbox.getNorthEast().lng()
     );
 
-  console.log("hDist: " + horizontalDistance);
-  console.log("vDist: " + verticalDistance);
 
   // Doesn't handle cross datezone
   kilometerDLat = (bbox.getNorthEast().lng() - bbox.getSouthWest().lng()) / horizontalDistance;
@@ -219,18 +217,32 @@ function handlePlayerResult (res) {
         player.longitude < bbox.northEast.lng)
     {
       var pos = new google.maps.LatLng(player.latitude, player.longitude);
-      var marker = new google.maps.Marker({
+      var pname = player.name;
+      // console.log("adding " + i + " " + pname);
+      var pmarker = new google.maps.Marker({
         position: pos,
         map: map,
         icon: PLAYER_ICON,
-        title: player.name
+        title: pname
       });
-      playersArray.push(marker);      
+      playersArray.push(pmarker);
+      selectPlayerOnClick(pmarker, pname);
     }
   }
 }
 
+function selectPlayerOnClick(marker, playerName)
+{
+  google.maps.event.addListener(marker, 'click', function() {
+      console.log("player " + playerName + " selected");
+      setSelectedPlayer(playerName);
+      loadZones()
+    });
+}
+
+
 function setSelectedPlayer(name) {
+  console.log("selecting " + name);
   if (name != null)
   {
     console.log("Selecting player " + name);
@@ -276,6 +288,7 @@ function placeMarker(zone)
     title: "Name: " + zone.name + "\n Owner: " + owner
   });
   markersArray.push(marker);
+  selectPlayerOnClick(marker, owner);
 }
 
 function calculateVoronoi(sites)
