@@ -225,8 +225,8 @@ function handlePlayerResult (res) {
         map: map,
         icon: PLAYER_ICON,
         title: pname,
-        labelContent: pname,
-        labelAnchor: new google.maps.Point(22, 0),
+        labelContent: '<span class="pname">' + pname + '</span>',
+        labelAnchor: new google.maps.Point(50, 0),
         labelClass: "labels", // the CSS class for the label
         labelStyle: {opacity: 0.75}
       });
