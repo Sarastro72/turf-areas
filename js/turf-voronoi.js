@@ -34,6 +34,7 @@ var loadTimer = null;
 var playerInterval = null;
 var selectedPlayer;
 var matchedPlayer;
+var area;
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -133,7 +134,7 @@ function loadZones() {
   var bbox = map.getBounds();
   var mbbox = calculateMargins(bbox);
 
-  var area = (mbbox.northEast.lat - mbbox.southWest.lat) * (mbbox.northEast.lng - mbbox.southWest.lng);
+  area = (mbbox.northEast.lat - mbbox.southWest.lat) * (mbbox.northEast.lng - mbbox.southWest.lng);
 
   if (area < 0.05) {
     var data = [{
@@ -313,6 +314,7 @@ function calculateVoronoi(sites)
 
 function drawVoronoi(diagram)
 {
+  var opacity = calculateOpacity();
   for(var i = 0; i < diagram.cells.length; i++) {
     var polyCoords = [];
     var cell = diagram.cells[i];
@@ -330,20 +332,21 @@ function drawVoronoi(diagram)
 
       var zone = lookupZone(cell.site);
       var col = colorFromZone(zone);
-      var opacity = 0.1;
+      var zoneOpacity = opacity;
+
       if (col == "-") {  // hack!
         col = "#FFFFFF";
-        opacity = 0;
+        zoneOpacity = 0;
       }
 
       placeMarker(zone);    
       var polygon = new google.maps.Polygon({
         paths: polyCoords,
         strokeColor: "#000000",
-        strokeOpacity: 0.1,
+        strokeOpacity: zoneOpacity,
         strokeWeight: 1,
         fillColor: col,
-        fillOpacity: opacity,
+        fillOpacity: zoneOpacity,
         title: zone.name
       });
 
@@ -379,7 +382,7 @@ function drawBoundaries(diagram)
 
     var col = "#000000";
     var opacity = 0.5;
-    var weight = 1;
+    var weight = 2;
     if (selectedPlayer != null 
       && (lname.toLowerCase() == selectedPlayer
       || rname.toLowerCase() == selectedPlayer))
@@ -410,6 +413,19 @@ function drawBoundaries(diagram)
     line.setMap(map);
     markersArray.push(line);
   }
+}
+
+// The more clutter, the less opacity.
+function calculateOpacity()
+{
+  // console.log("area: " + area);
+  if (area > 0.015) {
+    return 0.1;
+  }
+  if (area < 0.005) {
+    return 0.2;
+  }
+  return 0.15;
 }
 
 function clearOverlays() {
