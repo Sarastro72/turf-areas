@@ -6,6 +6,18 @@
       html { height: 100% }
       body { height: 100%; margin: 0; padding: 0 }
       #map-canvas { height: 100% }
+      .labels {
+        color: black;
+        background-color: rgba(255,255,255,192);
+        font-family: "Helvetica", "Lucida Grande", "Arial", sans-serif;
+        font-size: 10px;
+        font-weight: bold;
+        text-align: center;
+        border: 0px solid rgba(0,0,0,128);
+        border-radius: 5px;
+        padding: 1px;
+        white-space: nowrap;
+      }
     </style>
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcqcxXmUWXpt-iOujOro-aTZuIPcvpcyM&sensor=false">
@@ -13,6 +25,7 @@
     <script type="text/javascript" src="js/lib/jquery/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="js/lib/purl/purl.js"></script>
     <script type="text/javascript" src="js/lib/rhill-voronoi/rhill-voronoi-core.min.js"></script>
+    <script type="text/javascript" src="js/lib/markerwithlabel/markerwithlabel_packed.js"></script>
     <script type="text/javascript" src="js/turf-voronoi.js"></script>
   </head>
   <body>

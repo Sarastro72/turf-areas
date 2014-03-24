@@ -21,8 +21,8 @@ var PLAYER_ICON = {
   url: "img/player.png",
   size: new google.maps.Size(35, 90),
   origin: new google.maps.Point(0,0),
-  anchor: new google.maps.Point(8, 45),
-  scaledSize: new google.maps.Size(17, 45)
+  anchor: new google.maps.Point(8, 40),
+  scaledSize: new google.maps.Size(17, 40)
 };
 
 // ---- Variables ----
@@ -159,6 +159,7 @@ function loadZones() {
   else
   {
     clearOverlays();
+    loadPlayers();
   }
 
   if (playerInterval == null)
@@ -219,11 +220,15 @@ function handlePlayerResult (res) {
       var pos = new google.maps.LatLng(player.latitude, player.longitude);
       var pname = player.name;
       // console.log("adding " + i + " " + pname);
-      var pmarker = new google.maps.Marker({
+      var pmarker = new MarkerWithLabel({
         position: pos,
         map: map,
         icon: PLAYER_ICON,
-        title: pname
+        title: pname,
+        labelContent: pname,
+        labelAnchor: new google.maps.Point(22, 0),
+        labelClass: "labels", // the CSS class for the label
+        labelStyle: {opacity: 0.75}
       });
       playersArray.push(pmarker);
       selectPlayerOnClick(pmarker, pname);
