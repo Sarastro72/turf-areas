@@ -26,6 +26,7 @@ var PLAYER_ICON = {
 };
 
 // ---- Variables ----
+var geocoder = new google.maps.Geocoder();
 var map;
 var zones = {};
 var markersArray = [];
@@ -291,7 +292,7 @@ function placeMarker(zone)
     position: pos,
     map: map,
     icon: ZONE_ICON,
-    title: "Name: " + zone.name + "\n Owner: " + owner
+    title: "Name: " + zone.name + "\nOwner: " + owner + "\nTake: " + zone.takeoverPoints + ", PPH: " +zone.pointsPerHour
   });
   markersArray.push(marker);
   selectPlayerOnClick(marker, owner);
@@ -394,7 +395,7 @@ function drawBoundaries(diagram)
           matchedPlayer = rname;
         }
       }
-      col = colorFromStringHSV(matchedPlayer, 0x80, 0x40, 0x80);
+      col = colorFromStringHSV(matchedPlayer, 0x80, 0x40, 0x40);
       opacity = 1;
       weight = 4;
     }
@@ -457,7 +458,6 @@ function calculateDistance(lat1, lng1, lat2, lng2)
   return d;
 }
 
-var geocoder = new google.maps.Geocoder();
 function gotoLocation(location) {
   geocoder.geocode(
         {'address': location}, 
