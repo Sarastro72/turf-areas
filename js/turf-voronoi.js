@@ -154,7 +154,7 @@ function loadZones() {
       handleZoneResult(res);
     })
     .fail(function(res) {
-      alert("failed: " + JSON.stringify(res));
+      console.log("loadZones failed: " + JSON.stringify(res))
     });
 
     measureTime("load initiated");
@@ -204,7 +204,7 @@ function loadPlayers() {
   .fail(function(res) {
     clearInterval(playerInterval);
     playerInterval = null;
-    alert("failed getting players: " + JSON.stringify(res));
+    console.log("failed getting players: " + JSON.stringify(res));
   });
 }
 
@@ -469,7 +469,7 @@ function gotoLocation(location) {
                 map.panTo(loc);
             } 
             else {
-                alert(location + " not found: " + status); 
+                console.log(location + " not found: " + status); 
             } 
         }
     );
