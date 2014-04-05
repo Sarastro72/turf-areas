@@ -10,10 +10,11 @@ var LOAD_MARGIN=0.5;   // in kilometers
 
 // marker icon representing a zone
 var ZONE_ICON = {
-  url: "img/red_dot.png",
-  size: new google.maps.Size(10, 10),
+  url: "img/zone.png",
+  size: new google.maps.Size(24, 24),
   origin: new google.maps.Point(0,0),
-  anchor: new google.maps.Point(5, 5)
+  anchor: new google.maps.Point(6, 6),
+  scaledSize: new google.maps.Size(12, 12)
 };
 
 // Marker representing a player
