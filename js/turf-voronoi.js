@@ -345,7 +345,7 @@ function drawVoronoi(diagram)
       var polygon = new google.maps.Polygon({
         paths: polyCoords,
         strokeColor: "#000000",
-        strokeOpacity: zoneOpacity,
+        strokeOpacity: zoneOpacity / 2,
         strokeWeight: 1,
         fillColor: col,
         fillOpacity: zoneOpacity,
