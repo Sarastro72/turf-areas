@@ -78,6 +78,8 @@ function initialize() {
   var mapOptions = {
     center: new google.maps.LatLng(lat, lng),
     zoom: 14,
+    mapTypeId: google.maps.MapTypeId.TERRAIN,
+    streetViewControl: false,
     styles: styles
   };
   map = new google.maps.Map(document.getElementById("map-canvas"),
@@ -422,7 +424,7 @@ function calculateOpacity()
 {
   // console.log("area: " + area);
   if (area > 0.015) {
-    return 0.1;
+    return 0.08;
   }
   if (area < 0.005) {
     return 0.2;
