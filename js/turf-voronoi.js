@@ -196,10 +196,10 @@ function handleZoneResult(res) {
 function loadPlayers() {
   $.ajax({
     type: "GET",
-    url: "ba-simple-proxy.php?url=http://api.turfgame.com/v4/users/location",
+    url: "player-proxy.php",
   })
   .done(function(res) {
-    handlePlayerResult(res.contents);
+    handlePlayerResult(res);
   })
   .fail(function(res) {
     clearInterval(playerInterval);
