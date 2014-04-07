@@ -146,15 +146,15 @@ function loadZones() {
 
     $.ajax({
       type: "POST",
-      url: "http://api.turfgame.com/v4/zones",
+      url: "zone-proxy.php",
       contentType: "application/json",
       data: JSON.stringify(data)
     })
     .done(function(res) {
       handleZoneResult(res);
     })
-    .fail(function(res) {
-      console.log("loadZones failed: " + JSON.stringify(res))
+    .fail(function(xhr, status, error) {
+      console.log("loadZones failed: " + JSON.stringify(xhr), + ",\n\n " + status, ",\n\n " + error);
     });
 
     measureTime("load initiated");
@@ -196,10 +196,10 @@ function handleZoneResult(res) {
 function loadPlayers() {
   $.ajax({
     type: "GET",
-    url: "http://api.turfgame.com/v4/users/location",
+    url: "ba-simple-proxy.php?url=http://api.turfgame.com/v4/users/location",
   })
   .done(function(res) {
-    handlePlayerResult(res);
+    handlePlayerResult(res.contents);
   })
   .fail(function(res) {
     clearInterval(playerInterval);
