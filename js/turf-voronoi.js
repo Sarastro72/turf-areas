@@ -154,7 +154,7 @@ function loadZones() {
       handleZoneResult(res);
     })
     .fail(function(xhr, status, error) {
-      console.log("loadZones failed: " + JSON.stringify(xhr), + ",\n\n " + status, ",\n\n " + error);
+      console.log("loadZones failed: " + JSON.stringify(xhr), + ",\n " + status, ",\n " + error);
     });
 
     measureTime("load initiated");
@@ -201,10 +201,10 @@ function loadPlayers() {
   .done(function(res) {
     handlePlayerResult(res);
   })
-  .fail(function(res) {
+  .fail(function(xhr, status, error) {
     clearInterval(playerInterval);
     playerInterval = null;
-    console.log("failed getting players: " + JSON.stringify(res));
+    console.log("loadPlayers failed: " + JSON.stringify(xhr), + ",\n " + status, ",\n " + error);
   });
 }
 
