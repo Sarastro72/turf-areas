@@ -318,7 +318,7 @@ function calculateVoronoi(sites)
 
 function drawVoronoi(diagram)
 {
-  var opacity = calculateOpacity();
+  var opacity = calculateOpacity(0.2);
   for(var i = 0; i < diagram.cells.length; i++) {
     var polyCoords = [];
     var cell = diagram.cells[i];
@@ -385,7 +385,7 @@ function drawBoundaries(diagram)
     }
 
     var col = "#000000";
-    var opacity = 0.5;
+    var opacity = calculateOpacity(0.75);
     var weight = 2;
     if (selectedPlayer != null 
       && (lname.toLowerCase() == selectedPlayer
@@ -420,16 +420,16 @@ function drawBoundaries(diagram)
 }
 
 // The more clutter, the less opacity.
-function calculateOpacity()
+function calculateOpacity(strength)
 {
   // console.log("area: " + area);
   if (area > 0.015) {
-    return 0.08;
+    return 0.4 * strength;
   }
   if (area < 0.005) {
-    return 0.2;
+    return strength;
   }
-  return 0.15;
+  return 0.75 * strength;
 }
 
 function clearOverlays() {
