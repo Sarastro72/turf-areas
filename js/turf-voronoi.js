@@ -233,7 +233,8 @@ function handlePlayerResult (res) {
         labelContent: '<span class="pname">' + pname + '</span>',
         labelAnchor: new google.maps.Point(50, 0),
         labelClass: "labels", // the CSS class for the label
-        labelStyle: {opacity: 0.75}
+        labelStyle: {opacity: 0.75},
+        zIndex: 20
       });
       playersArray.push(pmarker);
       selectPlayerOnClick(pmarker, pname);
@@ -295,7 +296,8 @@ function placeMarker(zone)
     position: pos,
     map: map,
     icon: ZONE_ICON,
-    title: "Name: " + zone.name + "\nOwner: " + owner + "\nTake: " + zone.takeoverPoints + ", PPH: " +zone.pointsPerHour
+    title: "Name: " + zone.name + "\nOwner: " + owner + "\nTake: " + zone.takeoverPoints + ", PPH: " + zone.pointsPerHour,
+    zIndex: 10
   });
   markersArray.push(marker);
   selectPlayerOnClick(marker, owner);
