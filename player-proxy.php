@@ -1,5 +1,8 @@
 <?PHP
 
+  // This code was derived from http://benalman.com/projects/php-simple-proxy/
+  // And modified for one specific call
+
   $url = "http://api.turfgame.com/v4/users/location";
   $ch = curl_init( $url );
 

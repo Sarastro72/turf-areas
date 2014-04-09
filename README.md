@@ -9,9 +9,9 @@ areas of influence overlaid on a real world map.
 - Search function (zone name, location)  _partially fixed_
 - Player info panel (player, color on map, # zones on map)
 - Show the name of the selected player
-- Remove XSS limitation
 - Faster zone info on mouse over
 - Auto update on zone takes
+- ~~Remove XSS limitation~~
 - ~~Show players on map~~
 - ~~Highlight selected players zones~~
 - ~~Borders between players zones~~
