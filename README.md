@@ -18,3 +18,4 @@ areas of influence overlaid on a real world map.
 
 ###Known issues:
 - Players sometimes pops out of existence shortly after having been loaded
+- Issues if scrolling when players/zones are updated
