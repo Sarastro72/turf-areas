@@ -224,16 +224,17 @@ function handlePlayerResult (res) {
     {
       var pos = new google.maps.LatLng(player.latitude, player.longitude);
       var pname = player.name;
-      // console.log("adding " + i + " " + pname);
+      var pcolor = colorFromStringHSV(pname, 0, 0x80, 0xff);
+
       var pmarker = new MarkerWithLabel({
         position: pos,
         map: map,
         icon: PLAYER_ICON,
         title: pname,
-        labelContent: '<span class="pname">' + pname + '</span>',
+        labelContent: '<span class="pname" style="color: ' + pcolor + '">' + pname + '</span>',
         labelAnchor: new google.maps.Point(50, 0),
         labelClass: "labels", // the CSS class for the label
-        labelStyle: {opacity: 0.75},
+        labelStyle: {opacity: 0.85},
         zIndex: 20
       });
       playersArray.push(pmarker);
