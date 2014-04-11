@@ -34,6 +34,7 @@ var markersArray = [];
 var playersArray = [];
 var loadTimer = null;
 var playerInterval = null;
+var zoneInfoTimer = null;
 var selectedPlayer;
 var matchedPlayer;
 var area;
@@ -246,20 +247,48 @@ function handlePlayerResult (res) {
 function selectPlayerOnClick(marker, playerName)
 {
   google.maps.event.addListener(marker, 'click', function() {
-      console.log("player " + playerName + " selected");
-      setSelectedPlayer(playerName);
-      loadZones()
+      if (setSelectedPlayer(playerName)) {
+        $( "#player-info" ).html( "<b>Selected player:</b><br>" + playerName);
+        $( "#player-info" ).animate({top: '0px'});
+      } else {
+        $( "#player-info" ).animate({top: '-3em'});        
+      }
+      loadZones();
+    });
+}
+
+function showZoneInfoOnMouseOver(poly, zone)
+{
+  google.maps.event.addListener(poly, 'mouseover', function() {
+      var owner = "-";
+      if (zone.currentOwner != null) {
+        owner = zone.currentOwner.name;
+      }
+      $( "#zone-info" ).html( "<b>Zone: " + zone.name + "</b>" +
+        "<br><b>Owner:</b> " + owner +
+        "<br><b>Take:</b> " + zone.takeoverPoints + ", <b>PPH:</b> " + zone.pointsPerHour);
+      $( "#zone-info" ).animate({top: '0px'}, 400, function() {
+        if (zoneInfoTimer != null)
+        {
+          clearTimeout(zoneInfoTimer);
+        }
+        zoneInfoTimer = setTimeout(function() {$( "#zone-info" ).animate({top: '-4em'})}, 10000);
+      });
     });
 }
 
 
 function setSelectedPlayer(name) {
-  console.log("selecting " + name);
-  if (name != null)
+  if (name != null && selectedPlayer != name.toLowerCase())
   {
     console.log("Selecting player " + name);
     selectedPlayer = name.toLowerCase();
-    matchedPlayer = null;    
+    matchedPlayer = null;
+    return true;
+  } else {
+    selectedPlayer = null;
+    matchedPlayer = null;
+    return false;
   }
 }
 
@@ -357,6 +386,7 @@ function drawVoronoi(diagram)
         title: zone.name
       });
 
+      showZoneInfoOnMouseOver(polygon, zone);
       polygon.setMap(map);
       markersArray.push(polygon);
     }
