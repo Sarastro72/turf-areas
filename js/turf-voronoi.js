@@ -14,6 +14,9 @@ var COLORS = 0x10;
 // Time that the zone info tab is shown on inactivity
 var ZONE_INFO_SHOW_TIME = 5000;   // in milliseconds
 
+// Enable profiling of time critical parts
+var PROFILE_ENABLED = false;
+
 // marker icon representing a zone
 var ZONE_ICON = {
   url: "img/zone.png",
@@ -657,16 +660,21 @@ var _starttime;
 var _lasttime;
 
 function initTime() {
-  _starttime = (new Date()).getTime();
-  _lasttime = _starttime;
-  console.log("timer initialized " + _starttime);
+  if (PROFILE_ENABLED) {
+    _starttime = (new Date()).getTime();
+    _lasttime = _starttime;
+    console.log("timer initialized " + _starttime);
+  }
 }
 
 function measureTime(point)
 {
-  var time = (new Date()).getTime();
-  console.log("MT: " + point + ": " + (time - _lasttime) +  " (" + (time - _starttime) + ")");
-  _lasttime = time;
+  if (PROFILE_ENABLED) {
+    var time = (new Date()).getTime();
+    console.log("MT: " + point + ": " + (time - _lasttime) +  " (" + (time - _starttime) + ")");
+
+    _lasttime = time;
+  }
 }
 
 
