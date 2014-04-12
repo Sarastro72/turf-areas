@@ -271,8 +271,39 @@ function loadTakes() {
 }
 
 function handleTakeResult(res) {
-  console.log("Got " + res.length + " take events");
-  console.log(JSON.stringify(res[0]));
+  var newTake = false;
+
+  // Check that area is small enough to have zones loaded
+  if (area < 0.05) {
+    var bbox = getBoundsWithMargin();
+
+    for (var i = 0; i < res.length; i++) {
+      var take = res[i];
+
+      // Check that this is a new take
+      if (take.time > lastUpdateTime)
+      {
+
+        // Reload if any new takes are within the bbox
+        if (take.latitude > bbox.southWest.lat &&
+            take.latitude < bbox.northEast.lat &&
+            take.longitude > bbox.southWest.lng &&
+            take.longitude < bbox.northEast.lng)
+        {
+          console.log(take.currentOwner.name + " took " + take.zone.name + " from " + take.previousOwner.name);
+          newTake = true;
+        }
+      } else {
+        break;
+      }
+    }
+
+    if (newTake) {
+      loadZones();
+    }
+  }
+
+  lastUpdateTime = res[0].time;
 }
 
 function selectPlayerOnClick(marker, playerName)
