@@ -2,11 +2,17 @@
 // buffer time between map change and reload
 var LOAD_DELAY=500;   // in milliseconds
 
-// Delay between reloading players
-var PLAYER_UPDATE_INTERVAL=10000;   // in milliseconds
+// Delay between player and take updates
+var UPDATE_INTERVAL=10000;   // in milliseconds
 
 // margin around viewport where zones are loaded and calculated
 var LOAD_MARGIN=0.5;   // in kilometers
+
+// Number of colors. Must be 2^N
+var COLORS = 0x10;
+
+// Time that the zone info tab is shown on inactivity
+var ZONE_INFO_SHOW_TIME = 5000;   // in milliseconds
 
 // marker icon representing a zone
 var ZONE_ICON = {
@@ -33,8 +39,9 @@ var zones = {};
 var markersArray = [];
 var playersArray = [];
 var loadTimer = null;
-var playerInterval = null;
+var updateInterval = null;
 var zoneInfoTimer = null;
+var lastUpdateTime = "0";
 var selectedPlayer;
 var matchedPlayer;
 var area;
@@ -62,6 +69,9 @@ if (typeof(String.prototype.hashCode) === "undefined") {
 
 // ---- Code ----
 function initialize() {
+
+  console.log(navigator.userAgent);
+
   // Reduce saturation of the map
   var styles = [
   {
@@ -168,9 +178,9 @@ function loadZones() {
     loadPlayers();
   }
 
-  if (playerInterval == null)
+  if (updateInterval == null)
   {
-    playerInterval = setInterval(loadPlayers, PLAYER_UPDATE_INTERVAL);
+    updateInterval = setInterval(performUpdate, UPDATE_INTERVAL);
   }
 
 }
@@ -196,6 +206,11 @@ function handleZoneResult(res) {
   loadPlayers();
 }
 
+function performUpdate() {
+  loadPlayers();
+  loadTakes();
+}
+
 function loadPlayers() {
   $.ajax({
     type: "GET",
@@ -205,8 +220,6 @@ function loadPlayers() {
     handlePlayerResult(res);
   })
   .fail(function(xhr, status, error) {
-    clearInterval(playerInterval);
-    playerInterval = null;
     console.log("loadPlayers failed: " + JSON.stringify(xhr), + ",\n " + status, ",\n " + error);
   });
 }
@@ -244,15 +257,28 @@ function handlePlayerResult (res) {
   }
 }
 
+function loadTakes() {
+  $.ajax({
+    type: "GET",
+    url: "take-proxy.php",
+  })
+  .done(function(res) {
+    handleTakeResult(res);
+  })
+  .fail(function(xhr, status, error) {
+    console.log("loadTakes failed: " + JSON.stringify(xhr), + ",\n " + status, ",\n " + error);
+  });
+}
+
+function handleTakeResult(res) {
+  console.log("Got " + res.length + " take events");
+  console.log(JSON.stringify(res[0]));
+}
+
 function selectPlayerOnClick(marker, playerName)
 {
   google.maps.event.addListener(marker, 'click', function() {
-      if (setSelectedPlayer(playerName)) {
-        $( "#player-info" ).html( "<b>Selected player:</b><br>" + playerName);
-        $( "#player-info" ).animate({top: '0px'});
-      } else {
-        $( "#player-info" ).animate({top: '-3em'});        
-      }
+      setSelectedPlayer(playerName)
       loadZones();
     });
 }
@@ -272,7 +298,7 @@ function showZoneInfoOnMouseOver(poly, zone)
         {
           clearTimeout(zoneInfoTimer);
         }
-        zoneInfoTimer = setTimeout(function() {$( "#zone-info" ).animate({top: '-4em'})}, 10000);
+        zoneInfoTimer = setTimeout(function() {$( "#zone-info" ).animate({top: '-4em'})}, ZONE_INFO_SHOW_TIME);
       });
     });
 }
@@ -450,6 +476,14 @@ function drawBoundaries(diagram)
     line.setMap(map);
     markersArray.push(line);
   }
+
+  // Show/hide selected player info tab
+  if (selectedPlayer != null) {
+    $( "#player-info" ).html( "<b>Selected player:</b><br>" + ((matchedPlayer == null) ? selectedPlayer : matchedPlayer));
+    $( "#player-info" ).animate({top: '0px'});
+  } else {
+    $( "#player-info" ).animate({top: '-3em'});
+  }
 }
 
 // The more clutter, the less opacity.
@@ -522,12 +556,13 @@ function colorFromString(str) {
   return colorFromStringHSV(str, 0, 0xFF, 0xFF);
 }
 
-var G = 0x1f;   // color granularity must be 2^x - 1
+
 
 function colorFromStringHSV(str, h, s, v) {
+  var G = COLORS - 1;
   var hash = str.hashCode();
   var hue = Math.floor((hash & G) + (h * G / 0xFF)) & G;
-  var num = hue / (G + 1) * 6;
+  var num = hue / COLORS * 6;
   s = Math.floor((0xFF - s) * v / 0xFF);
   var d = v - s;
   var pattern = Math.floor(num);  // 0-5
