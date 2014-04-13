@@ -293,7 +293,8 @@ function handleTakeResult(res) {
             take.longitude > bbox.southWest.lng &&
             take.longitude < bbox.northEast.lng)
         {
-          console.log(take.currentOwner.name + " took " + take.zone.name + " from " + take.previousOwner.name);
+          console.log(take.currentOwner.name + " took " + take.zone.name + " from "
+            + ((take.previousOwner != null) ? take.previousOwner.name : "no one"));
           newTake = true;
         }
       } else {
