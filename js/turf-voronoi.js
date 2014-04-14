@@ -38,6 +38,8 @@ var PLAYER_ICON = {
 // ---- Variables ----
 var geocoder = new google.maps.Geocoder();
 var map;
+var voronoi = new Voronoi();
+var diagram;
 var zones = {};
 var markersArray = [];
 var playersArray = [];
@@ -192,7 +194,7 @@ function handleZoneResult(res) {
   console.log("Loaded " + res.length + " zones");
   measureTime("Zones loaded");
   var sites = [];
-  zones = {};
+
   for (var i = 0; i < res.length; i++) {
     //Store zone for later lookup
     storeZone(res[i]);
@@ -202,7 +204,7 @@ function handleZoneResult(res) {
     sites.push(site);
   }
 
-  var diagram = calculateVoronoi(sites);
+  diagram = calculateVoronoi(sites);
   measureTime("voronoi calculated");
   clearOverlays();
   drawVoronoi(diagram);
@@ -405,8 +407,9 @@ function calculateVoronoi(sites)
     yb: mbounds.northEast.lat
   };
 
-  var voronoi = new Voronoi();
-  return voronoi.compute(sites, bbox);
+  voronoi.recycle(diagram);
+  diagram = voronoi.compute(sites, bbox);
+  return diagram;
 }
 
 function drawVoronoi(diagram)
@@ -664,7 +667,6 @@ function initTime() {
   if (PROFILE_ENABLED) {
     _starttime = (new Date()).getTime();
     _lasttime = _starttime;
-    console.log("timer initialized " + _starttime);
   }
 }
 
