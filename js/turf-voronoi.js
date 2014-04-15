@@ -287,21 +287,18 @@ function handleTakeResult(res) {
       var take = res[i];
 
       // Check that this is a new take
-      if (take.time > lastUpdateTime)
-      {
-
-        // Reload if any new takes are within the bbox
-        if (take.latitude > bbox.southWest.lat &&
-            take.latitude < bbox.northEast.lat &&
-            take.longitude > bbox.southWest.lng &&
-            take.longitude < bbox.northEast.lng)
-        {
-          console.log(take.currentOwner.name + " took " + take.zone.name + " from "
-            + ((take.previousOwner != null) ? take.previousOwner.name : "no one"));
-          newTake = true;
-        }
-      } else {
+      if (take.time <= lastUpdateTime) {
         break;
+      }
+      // Reload if any new takes are within the bbox
+      if (take.latitude > bbox.southWest.lat
+          && take.latitude < bbox.northEast.lat
+          && take.longitude > bbox.southWest.lng
+          && take.longitude < bbox.northEast.lng)
+      {
+        console.log(take.currentOwner.name + " took " + take.zone.name + " from "
+          + ((take.previousOwner != null) ? take.previousOwner.name : "no one"));
+        newTake = true;
       }
     }
 
