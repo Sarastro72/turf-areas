@@ -105,6 +105,7 @@ function initialize() {
     if (loadTimer != null) {
       clearTimeout(loadTimer);
     }
+    _gaq.push(['_trackEvent', 'LoadZones', 'BoundsChanged']);
     loadTimer = setTimeout(loadZones, LOAD_DELAY);
   });
 
@@ -305,6 +306,7 @@ function handleTakeResult(res) {
     }
 
     if (newTake) {
+      _gaq.push(['_trackEvent', 'LoadZones', 'TakeEvent']);
       loadZones();
     }
   }
