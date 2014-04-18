@@ -50,6 +50,7 @@ var lastUpdateTime = "0";
 var selectedPlayer;
 var matchedPlayer;
 var area;
+var zoneResult;
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -170,6 +171,8 @@ function loadZones() {
       data: JSON.stringify(data)
     })
     .done(function(res) {
+      console.log("Loaded " + res.length + " zones");
+      measureTime("Zones loaded");
       handleZoneResult(res);
     })
     .fail(function(xhr, status, error) {
@@ -192,8 +195,7 @@ function loadZones() {
 }
 
 function handleZoneResult(res) {
-  console.log("Loaded " + res.length + " zones");
-  measureTime("Zones loaded");
+  zoneResult = res;
   var sites = [];
 
   for (var i = 0; i < res.length; i++) {
@@ -315,7 +317,7 @@ function selectPlayerOnClick(marker, playerName)
 {
   google.maps.event.addListener(marker, 'click', function() {
       setSelectedPlayer(playerName)
-      loadZones();
+      handleZoneResult(zoneResult);
     });
 }
 
