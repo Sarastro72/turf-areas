@@ -8,6 +8,7 @@
     <style type="text/css">
       html { height: 100% }
       body { height: 100%; margin: 0; padding: 0 }
+      a {color: #ddd;}
       #map-canvas { height: 100% }
       #zone-info,#player-info
       {
@@ -35,6 +36,25 @@
         top: -4em;
         width: 180px;
         height: 3.5em;
+      }
+      #info
+      {
+        display: none;
+        position: absolute;
+        width: 250px;
+        height: 300px;
+        padding: 1em;
+        border: 3px solid black;
+        border-radius: 10px;
+        z-index: 200;
+        left: 50%;
+        top: 20px;
+        margin-left: -125px;
+        font-family: "Helvetica", "Lucida Grande", "Arial", sans-serif;
+        font-size: 14px;
+        background-color: rgba(0,0,0,0.8);
+        color: #eee;
+        overflow: auto;
       }
       .labels {
         width: 100px;
@@ -83,5 +103,12 @@
     <div id="zone-info"></div>
     <div id="player-info"></div>
     <div id="map-canvas"></div>
+    <div id="info">
+      <p><center><b>Turf AOI</b></center></p>
+      <p>Made by Sarastro (Mattias Bäcklund)</p>
+      <p>A visual representation of <a href="http://turfgame.com" target="_new">turf game</a></p>
+      <p>Here I go on and on about the purpose of the app. Here I go on and on about the purpose of the app. Here I go on and on about the purpose of the app. Here I go on and on about the purpose of the app. Here I go on and on about the purpose of the app. Here I go on and on about the purpose of the app. Here I go on and on about the purpose of the app. Here I go on and on about the purpose of the app. Here I go on and on about the purpose of the app. Here I go on and on about the purpose of the app. Here I go on and on about the purpose of the app. </p>
+      <p>Source code <a href="https://github.com/Sarastro72/turf-aoi" target="_new">avaliable on github</a></p>
+    </div>
   </body>
 </html>
