@@ -51,6 +51,7 @@ var selectedPlayer;
 var matchedPlayer;
 var area;
 var zoneResult;
+var latitudeFactor = 1;
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -194,16 +195,37 @@ function loadZones() {
 
 }
 
+function tLatLng2voronoiXY(latlng)
+{
+  //console.log("tlng: " + latlng.longitude + ", vx: " + (latlng.longitude * latitudeFactor));
+  return {x: latlng.longitude * latitudeFactor, y: latlng.latitude}
+}
+
+function voronoiXY2gLatLng(vxy)
+{
+  //console.log("vx: " + vxy.x + ", glng: " + (vxy.x / latitudeFactor));
+  return new google.maps.LatLng(vxy.y, vxy.x / latitudeFactor);
+}
+
 function handleZoneResult(res) {
   zoneResult = res;
   var sites = [];
 
+  if (res.length == 0) {return}
+
+  // Calculate latitude factor from the first zone
+  // The latitude factor is used to compensate for the difference in distance between 
+  // one latitude degree compared to one longitude degree.
+  latitudeFactor = Math.cos(res[0].latitude.toRad());
+  console.log("Latitude factor: " + latitudeFactor);
+
   for (var i = 0; i < res.length; i++) {
+    var site = tLatLng2voronoiXY(res[i]);
+
     //Store zone for later lookup
-    storeZone(res[i]);
+    storeZone(res[i], site);
 
     // Build sites array
-    var site = {x: res[i].longitude, y: res[i].latitude};
     sites.push(site);
   }
 
@@ -366,9 +388,9 @@ function makeHString(lat, lng)
   return "[" + lat + "," + lng + "]";
 }
 
-function storeZone(zone)
+function storeZone(zone, site)
 {
-  var hstring = makeHString(zone.latitude, zone.longitude);
+  var hstring = makeHString(site.y, site.x);
   zones[hstring] = zone;
 }
 
@@ -399,11 +421,10 @@ function placeMarker(zone)
 
 function calculateVoronoi(sites)
 {
-  var bounds = map.getBounds();
-  var mbounds = calculateMargins(bounds);
+  var mbounds = getBoundsWithMargin();
   var bbox = {
-    xl: mbounds.southWest.lng,
-    xr: mbounds.northEast.lng,
+    xl: mbounds.southWest.lng * latitudeFactor,
+    xr: mbounds.northEast.lng * latitudeFactor,
     yt: mbounds.southWest.lat,
     yb: mbounds.northEast.lat
   };
@@ -423,12 +444,12 @@ function drawVoronoi(diagram)
     if (cell.halfedges.length > 0) {
       for (var c = 0; c < cell.halfedges.length; c++) {
         var edge = cell.halfedges[c];
-        var coord = new google.maps.LatLng(edge.getStartpoint().y, edge.getStartpoint().x);
+        var coord = voronoiXY2gLatLng(edge.getStartpoint());
         polyCoords.push(coord);
       }
       // Close the loop
       var edge = cell.halfedges[0];
-      var coord = new google.maps.LatLng(edge.getStartpoint().y, edge.getStartpoint().x);
+      var coord = voronoiXY2gLatLng(edge.getStartpoint());
       polyCoords.push(coord);
 
       var zone = lookupZone(cell.site);
@@ -502,8 +523,8 @@ function drawBoundaries(diagram)
     }
 
     // Draw a line
-    var start = new google.maps.LatLng(edge.va.y, edge.va.x);
-    var stop = new google.maps.LatLng(edge.vb.y, edge.vb.x);
+    var start = voronoiXY2gLatLng(edge.va);
+    var stop = voronoiXY2gLatLng(edge.vb);
     coordinates = [start, stop];
     var line = new google.maps.Polyline({
       path: coordinates,
