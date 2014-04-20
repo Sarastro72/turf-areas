@@ -153,8 +153,7 @@ function calculateMargins(bbox) {
 
 function loadZones() {
   initTime();
-  var bbox = map.getBounds();
-  var mbbox = calculateMargins(bbox);
+  var mbbox = getBoundsWithMargin();
 
   area = (mbbox.northEast.lat - mbbox.southWest.lat) * (mbbox.northEast.lng - mbbox.southWest.lng);
 
@@ -176,7 +175,7 @@ function loadZones() {
       handleZoneResult(res);
     })
     .fail(function(xhr, status, error) {
-      console.log("loadZones failed: " + JSON.stringify(xhr), + ",\n " + status, ",\n " + error);
+      console.log("loadZones failed: " + JSON.stringify(xhr) + ",\n " + status + ",\n " + error);
     });
 
     measureTime("load initiated");
@@ -560,6 +559,7 @@ function calculateDistance(lat1, lng1, lat2, lng2)
   // var d = Math.acos(Math.sin(lat1.toRad())*Math.sin(lat2.toRad()) + 
   //   Math.cos(lat1.toRad())*Math.cos(lat2.toRad()) *
   //   Math.cos(lng2-lng1).toRad()) * R;
+
   var R = 111.111;
   var x = (lng2-lng1) * Math.cos((lat1+lat2).toRad()/2);
   var y = (lat2-lat1);
@@ -607,10 +607,6 @@ function colorFromStringHSV(str, h, s, v) {
   var d = v - s;
   var pattern = Math.floor(num);  // 0-5
   var scale = Math.floor((num - pattern) * d + 0.5); 
-
-  // console.log("str: " + str + " h: " + h + " s: " + s + " v: " + v + " d: " + d);
-  // console.log("hash: " + hash.toString(16) + ", hue: " + hue + "/" + G + ", num: " + num);
-  // console.log("pattern: " + pattern + ", scale: " + scale);
 
   var r = 0, g = 0, b = 0;
   switch (pattern)
