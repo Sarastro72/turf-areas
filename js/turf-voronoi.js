@@ -185,6 +185,7 @@ function loadZones() {
   {
     clearOverlays();
     loadPlayers();
+    zoneResult = [];
   }
 
   if (updateInterval == null)
