@@ -8,6 +8,7 @@
     <style type="text/css">
       html { height: 100% }
       body { height: 100%; margin: 0; padding: 0 }
+      a {color: #ddd;}
       #map-canvas { height: 100% }
       #zone-info,#player-info
       {
@@ -36,6 +37,48 @@
         width: 180px;
         height: 3.5em;
       }
+      #icon-panel {
+        position: absolute;
+        top: 0px;
+        left: 460px;
+        padding: 2px;
+        margin: 0px;
+        margin-top: 2px;
+        background-color: rgba(255,255,255,0.7);
+        border-radius: 3px;
+      }
+      div.icon {
+        float: left;
+        padding: 0px;
+        margin: 0px;
+        height: 32px;
+        cursor: pointer;
+      }
+      img.icon {
+        width: 32px;
+        height: 32px;
+      }
+      #info
+      {
+        display: none;
+        position: absolute;
+        width: 50%;
+        max-width: 450px;
+        max-height: 450px;
+        padding: 1em;
+        border: 3px solid black;
+        border-radius: 10px;
+        z-index: 200;
+        left: 50%;
+        top: 3.5em;
+        margin-left: -25%;
+        margin-top: 4px;
+        font-family: "Helvetica", "Lucida Grande", "Arial", sans-serif;
+        font-size: 14px;
+        background-color: rgba(0,0,0,0.7);
+        color: #eee;
+        overflow: auto;
+      }
       .labels {
         width: 100px;
         padding: 0px;
@@ -58,7 +101,7 @@
     </style>
 
     <script type="text/javascript"
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcqcxXmUWXpt-iOujOro-aTZuIPcvpcyM&sensor=false">
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcqcxXmUWXpt-iOujOro-aTZuIPcvpcyM&sensor=true">
     </script>
     <script type="text/javascript" src="js/lib/jquery/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="js/lib/purl/purl.js"></script>
@@ -83,5 +126,24 @@
     <div id="zone-info"></div>
     <div id="player-info"></div>
     <div id="map-canvas"></div>
+    <div id="icon-panel"> 
+      <!--div id="search_icon" class="icon" onClick='toggleSearch(); return false;'><img src="img/search_icon.png" class="icon"></div-->
+      <div id="info_icon" class="icon" onClick='toggleInfo(); return false;'><img src="img/info_icon.png" class="icon"></div>    </div>
+    <div id="info">
+      <p><center><b>Turf - Area Of Influence</b></center></p>
+      <p>A visual representation of the excellent GPS game, <a href="http://turfgame.com" target="_blank">Turf</a>.</p>
+      <p><b>Method</b></p>
+      <p>The turf zones are expanded to fill the whole map. Each player is assigned a color based on the players name. Each
+        zone takes the color of its owner. Borders are drawn between zones that have different owners. This way
+        we get a map that represents the players areas of ownership, or Area of Influence.</p>
+      <p><b>Usage</b></p>
+      <p>Turf AOI shows a live representation of the game, players are visible as they play and the map is updated when a zone
+        is taken. As you move the mouse over the zones on the map, a zone info tab shows information for the current zone. You can click on a player or on a zone marker to select that player. The zones of the selected player are highlighted with extra thick borders.</p>
+      <p><b>Keep in touch</b></p>
+      <p>Follow <a href="https://twitter.com/TurfAOI" target="_blank">TurfAOI on Twitter</a> to keep track of updates or come with suggestions or shouts of encouragement (or complaints if you must)</p>
+      <p><b>Attribution</b></p>
+      <p>Made by Sarastro (Mattias Bäcklund)</p>
+      <p>The source code is <a href="https://github.com/Sarastro72/turf-aoi" target="_blank">avaliable on github</a>, where you can also report issues or come with feature requests</p>
+    </div>
   </body>
 </html>
