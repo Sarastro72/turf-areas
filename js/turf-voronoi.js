@@ -52,6 +52,7 @@ var matchedPlayer;
 var area;
 var zoneResult;
 var latitudeFactor = 1;
+var displayInfo = false;
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -676,6 +677,15 @@ function getHexByte(num)
   } else {
     return n.toString(16);
   }  
+}
+
+function toggleInfo() {
+  if (displayInfo) {
+    $('#info').fadeOut();
+  } else {
+    $('#info').fadeIn();
+  }
+  displayInfo = !displayInfo;
 }
 
 // profiling
