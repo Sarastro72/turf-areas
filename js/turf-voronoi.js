@@ -438,9 +438,12 @@ function calculateVoronoi(sites)
 function drawVoronoi(diagram)
 {
   var opacity = calculateOpacity(0.2);
+
   for(var i = 0; i < diagram.cells.length; i++) {
     var polyCoords = [];
     var cell = diagram.cells[i];
+    var zone = lookupZone(cell.site);
+    placeMarker(zone);
 
     if (cell.halfedges.length > 0) {
       for (var c = 0; c < cell.halfedges.length; c++) {
@@ -452,8 +455,20 @@ function drawVoronoi(diagram)
       var edge = cell.halfedges[0];
       var coord = voronoiXY2gLatLng(edge.getStartpoint());
       polyCoords.push(coord);
+    }
 
-      var zone = lookupZone(cell.site);
+    // Special case for lone zones, set poly to bounding box
+    if (diagram.cells.length == 1) {
+      var bbox = getBoundsWithMargin();
+      polyCoords.push(new google.maps.LatLng(bbox.northEast.lat, bbox.northEast.lng));
+      polyCoords.push(new google.maps.LatLng(bbox.northEast.lat, bbox.southWest.lng));
+      polyCoords.push(new google.maps.LatLng(bbox.southWest.lat, bbox.southWest.lng));
+      polyCoords.push(new google.maps.LatLng(bbox.southWest.lat, bbox.northEast.lng));
+      polyCoords.push(new google.maps.LatLng(bbox.northEast.lat, bbox.northEast.lng));
+    }
+
+    if (polyCoords.length > 0)
+    {
       var col = colorFromZone(zone);
       var zoneOpacity = opacity;
 
@@ -462,7 +477,6 @@ function drawVoronoi(diagram)
         zoneOpacity = 0;
       }
 
-      placeMarker(zone);    
       var polygon = new google.maps.Polygon({
         paths: polyCoords,
         strokeColor: "#000000",
