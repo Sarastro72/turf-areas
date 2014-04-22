@@ -212,7 +212,10 @@ function handleZoneResult(res) {
   zoneResult = res;
   var sites = [];
 
-  if (res.length == 0) {return}
+  if (res.length == 0) {
+    clearOverlays();
+    return;
+  }
 
   // Calculate latitude factor from the first zone
   // The latitude factor is used to compensate for the difference in distance between 
