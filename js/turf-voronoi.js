@@ -83,10 +83,52 @@ function initialize() {
   // Reduce saturation of the map
   var styles = [
   {
-    stylers: [
-      { saturation: -80 }
+    "stylers": [
+      { "saturation": -80 }
+    ]
+  },{
+    "featureType": "poi",
+    "elementType": "labels",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  },{
+    "featureType": "water",
+    "stylers": [
+      { "color": "#aaaabb" }
+    ]
+  },{
+    "featureType": "road.arterial",
+    "elementType": "geometry.fill",
+    "stylers": [
+      { "color": "#FFFFFF" }
+    ]
+  },{
+    "featureType": "road.arterial",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      { "color": "#AAAAAA" }
+    ]
+  },{
+    "featureType": "road.local",
+    "elementType": "geometry.stroke",
+    "stylers": [
+      { "color": "#AAAAAA" }
+    ]
+  },{
+    "featureType": "road.local",
+    "elementType": "geometry.fill",
+    "stylers": [
+      { "color": "#F8F8F8" }
+    ]
+  },{
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      { "saturation": -100 }
     ]
   }];
+
 
   // Default location Stockholm
   var lat = 59.32893;
