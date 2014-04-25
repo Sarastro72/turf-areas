@@ -260,10 +260,9 @@ function handleZoneResult(res) {
   }
 
   // Calculate latitude factor from the first zone
-  // The latitude factor is used to compensate for the difference in distance between 
-  // one latitude degree compared to one longitude degree.
+  // The latitude factor is used to compensate for the difference in length between 
+  // one latitude degree and one longitude degree.
   latitudeFactor = Math.cos(res[0].latitude.toRad());
-  console.log("Latitude factor: " + latitudeFactor);
 
   for (var i = 0; i < res.length; i++) {
     var site = tLatLng2voronoiXY(res[i]);
