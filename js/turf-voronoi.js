@@ -681,8 +681,18 @@ function colorFromString(str) {
 function colorFromStringHSV(str, h, s, v) {
   var G = COLORS - 1;
   var hash = str.hashCode();
-  var hue = Math.floor((hash & G) + (h * G / 0xFF)) & G;
-  var num = hue / COLORS * 6;
+  var hue = (Math.floor((hash & G) + (h * G / 0xFF)) & G) * 1000 / COLORS;
+  return colorFromHSV(hue, s, v);
+}
+
+
+/**
+ *  h = HUE         1 - 1000 
+ *  s = Saturation  0 - 255
+ *  v = Value       0 - 255
+ */
+function colorFromHSV(h,s,v) {  
+  var num = h / 1001 * 6;
   s = Math.floor((0xFF - s) * v / 0xFF);
   var d = v - s;
   var pattern = Math.floor(num);  // 0-5
