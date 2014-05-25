@@ -9,7 +9,7 @@ var UPDATE_INTERVAL=10000;   // in milliseconds
 var LOAD_MARGIN=0.5;   // in kilometers
 
 // Number of colors. Must be 2^N
-var COLORS = 0x10;
+var COLORS = 0x80;
 
 // Time that the zone info tab is shown on inactivity
 var ZONE_INFO_SHOW_TIME = 5000;   // in milliseconds
