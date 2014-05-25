@@ -53,6 +53,7 @@ var area;
 var zoneResult;
 var latitudeFactor = 1;
 var displayInfo = false;
+var mode = "owner";
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -135,6 +136,7 @@ function initialize() {
   var lng = 18.06491;
   var location = $.url().param('location');
   setSelectedPlayer($.url().param('player'));
+  mode = $.url().param('mode');
 
   var mapOptions = {
     center: new google.maps.LatLng(lat, lng),
@@ -482,6 +484,10 @@ function calculateVoronoi(sites)
 function drawVoronoi(diagram)
 {
   var opacity = calculateOpacity(0.2);
+  if (mode == "pph")
+  {
+    opacity = 0.5;
+  }
 
   for(var i = 0; i < diagram.cells.length; i++) {
     var polyCoords = [];
@@ -538,7 +544,10 @@ function drawVoronoi(diagram)
   }
   measureTime("cells drawn");
 
-  drawBoundaries(diagram);
+  if (mode != "pph")
+  {
+    drawBoundaries(diagram);
+  }
 }
 
 function drawBoundaries(diagram)
@@ -665,11 +674,18 @@ function gotoLocation(location) {
 } 
 
 function colorFromZone(zone) {
-  if (zone.currentOwner == null) {
-    return "-";
+  if (mode == "pph")
+  {
+    var hue = (9 - zone.pointsPerHour) * 333 / 9;
+    return colorFromHSV(hue, 0xFF, 0xFF);
   }
-
-  return colorFromString(zone.currentOwner.name);
+  else
+    {
+    if (zone.currentOwner == null) {
+      return "-";
+    }
+    return colorFromString(zone.currentOwner.name);
+  }
 }
 
 function colorFromString(str) {
