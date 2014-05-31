@@ -676,7 +676,7 @@ function gotoLocation(location) {
 function colorFromZone(zone) {
   if (mode == "pph")
   {
-    var hue = (9 - zone.pointsPerHour) * 333 / 9;
+    var hue = (9 - zone.pointsPerHour) * 400 / 9;
     return colorFromHSV(hue, 0xFF, 0xFF);
   }
   else
