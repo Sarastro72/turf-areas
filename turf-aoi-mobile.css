@@ -1,0 +1,14 @@
+@media only screen 
+and (max-width : 480px) {
+
+	#player-info {
+	  left: 10px;
+  	  width: 120px;
+	}
+
+	#zone-info {
+	  left: 148px;
+ 	  width: 150px;
+	}
+
+}
