@@ -11,4 +11,13 @@ and (max-width : 480px) {
  	  width: 150px;
 	}
 
+	#icon-panel {
+	  top: 4em;
+	  left: 0px;
+	  margin-top: 0px;
+	  margin-left: 2px;
+	  max-width: 24px;
+	}
+
+
 }
