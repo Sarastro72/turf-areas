@@ -99,6 +99,10 @@ div.close {
   overflow: auto;
 }
 
+#search {
+  display: none;
+}
+
 .labels {
   width: 100px;
   padding: 0px;
