@@ -134,13 +134,23 @@ function initialize() {
   // Default location Stockholm
   var lat = 59.32893;
   var lng = 18.06491;
+  var zoom = 14;
+
+  var storedLoc = loadCurrentLocation();
+  if (storedLoc != false)
+  {
+    lat = storedLoc.lat;
+    lng = storedLoc.lng;
+    zoom = storedLoc.zoom;
+  }
+
   var location = $.url().param('location');
   setSelectedPlayer($.url().param('player'));
   mode = $.url().param('mode');
 
   var mapOptions = {
     center: new google.maps.LatLng(lat, lng),
-    zoom: 14,
+    zoom: zoom,
     mapTypeId: google.maps.MapTypeId.TERRAIN,
     streetViewControl: false,
     styles: styles
@@ -199,6 +209,7 @@ function calculateMargins(bbox) {
 
 function loadZones() {
   initTime();
+  storeCurrentLocation();
   var mbbox = getBoundsWithMargin();
 
   area = (mbbox.northEast.lat - mbbox.southWest.lat) * (mbbox.northEast.lng - mbbox.southWest.lng);
@@ -793,6 +804,44 @@ function measureTime(point)
   }
 }
 
+function supportsHtml5Storage() {
+  try {
+    return 'localStorage' in window && window['localStorage'] !== null;
+  } catch (e) {
+    return false;
+  }
+}
+
+function storeCurrentLocation () {
+  if (!supportsHtml5Storage()) {
+    return false;
+  }
+  var loc = map.getCenter();
+  localStorage.locationStored = true;
+  localStorage.currentLat = loc.lat();
+  localStorage.currentLng = loc.lng();
+  localStorage.currentZoom = map.getZoom();
+
+
+  return true;
+}
+
+function loadCurrentLocation() {
+  if (!supportsHtml5Storage()) {
+    return false;
+  }
+  var loc = {};
+
+  if (localStorage.locationStored != "true") {
+    return false;
+  }
+
+  loc.lat = parseFloat(localStorage.currentLat);
+  loc.lng = parseFloat(localStorage.currentLng);
+  loc.zoom = parseInt(localStorage.currentZoom);
+
+  return loc;
+}
 
 
 google.maps.event.addDomListener(window, 'load', initialize);
