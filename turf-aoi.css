@@ -99,8 +99,33 @@ div.close {
   overflow: auto;
 }
 
+input {
+  font-family: "Helvetica", "Lucida Grande", "Arial", sans-serif;
+  font-size: 16px;
+  background-color: rgba(255,255,255,0.7);
+  border: 0px;
+  border-radius: 2px;
+  padding: 4px;
+}
+input:focus {
+    outline: 0;
+}
+
 #search {
   display: none;
+  position: absolute;
+  max-width: 450px;
+  padding: 5px;
+  border: 3px solid black;
+  border-radius: 10px;
+  z-index: 110;
+  left: 50%;
+  top: 5em;
+  margin-left: -25%;
+  font-size: 14px;
+  background-color: rgba(0,0,0,0.5);
+  color: #eee;
+  overflow: auto;
 }
 
 .labels {

@@ -35,7 +35,7 @@
     <div id="player-info"></div>
     <div id="map-canvas"></div>
     <div id="icon-panel"> 
-      <!--div id="search_icon" class="icon" onClick='toggleSearch(); return false;'><img src="img/search_icon.png" class="icon"></div-->
+    <div id="search_icon" class="icon" onClick='toggleSearch(); return false;'><img src="img/search_icon.png" class="icon"></div>
       <div id="info_icon" class="icon" onClick='toggleInfo(); return false;'><img src="img/info_icon.png" class="icon"></div>
     </div>
     <div id="info">
@@ -56,7 +56,8 @@
       <div class="icon close" onClick='toggleInfo(); return false;'><img src="img/close.png" class="icon"></div>
     </div>
     <div id="search">
-      <input name="location" type="text" />
+      <b>Go to:</b><br>
+      <input id="searchField" name="location" type="text" />
     </div>
   </body>
 </html>

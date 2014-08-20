@@ -53,6 +53,7 @@ var area;
 var zoneResult;
 var latitudeFactor = 1;
 var displayInfo = false;
+var displaySearch = false;
 var mode = "owner";
 
 // ---- Prototypes ----
@@ -169,6 +170,23 @@ function initialize() {
   if (location != null) {
     gotoLocation(location);
   }
+
+  // Setup submit on enter for search input field
+  $('#searchField').keypress(function(e) {
+    // Enter is pressed
+    if (e.keyCode == 13) {
+      doSearch();
+      return false;
+    }
+  });
+
+  $('#searchField').keydown(function(e) {
+    // Enter is pressed
+    if (e.keyCode == 27) {
+      toggleSearch();
+      return false;
+    }
+  });
 }
 
 function calculateMargins(bbox) {
@@ -783,6 +801,17 @@ function toggleInfo() {
   displayInfo = !displayInfo;
 }
 
+function toggleSearch() {
+  if (displaySearch) {
+    $('#search').fadeOut();
+  } else {
+    $('#searchField').val("");
+    $('#search').fadeIn();
+    $('#searchField').focus();
+  }
+  displaySearch = !displaySearch;
+}
+
 // profiling
 var _starttime;
 var _lasttime;
@@ -841,6 +870,14 @@ function loadCurrentLocation() {
   loc.zoom = parseInt(localStorage.currentZoom);
 
   return loc;
+}
+
+function doSearch() {
+  toggleSearch();
+  var txt = $("#searchField").val();
+  if (txt) {
+    gotoLocation(txt);
+  }
 }
 
 
