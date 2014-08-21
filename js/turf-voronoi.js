@@ -803,6 +803,7 @@ function toggleInfo() {
 
 function toggleSearch() {
   if (displaySearch) {
+    $('#searchField').blur();
     $('#search').fadeOut();
   } else {
     $('#searchField').val("");
