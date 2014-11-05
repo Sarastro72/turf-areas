@@ -614,7 +614,6 @@ function drawBoundaries(diagram)
           matchedPlayer = rname;
         }
       }
-      col = colorFromStringHSV(matchedPlayer, 0x80, 0x40, 0x40);
       opacity = 1;
       weight = 4;
     }
