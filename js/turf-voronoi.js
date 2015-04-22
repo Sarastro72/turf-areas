@@ -320,7 +320,7 @@ function performUpdate() {
 function loadPlayers() {
   $.ajax({
     type: "GET",
-    url: "player-proxy.php",
+    url: "playerlocation-proxy.php",
   })
   .done(function(res) {
     handlePlayerResult(res);
