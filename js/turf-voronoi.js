@@ -917,7 +917,7 @@ function handlePlayerResult(res) {
           "<a href='http://turfgame.com/user/" + selectedPlayer + "' target='_blank'>" +
           ((matchedPlayer == null) ? selectedPlayer : matchedPlayer + "</a>" +
           " (" + pInfo.rank + ")<br>" +
-          "<b>p:</b> " + pInfo.points  + " z" + pInfo.zones.length + " +" + pInfo.pointsPerHour));
+          "<b>p:</b> " + pInfo.points + " +" + pInfo.pointsPerHour + " <b>z:</b> " + pInfo.zones.length));
     }
   }
 }
