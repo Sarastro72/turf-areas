@@ -323,14 +323,14 @@ function loadPlayers() {
     url: "playerlocation-proxy.php",
   })
   .done(function(res) {
-    handlePlayerResult(res);
+    handlePlayersResult(res);
   })
   .fail(function(xhr, status, error) {
     console.log("loadPlayers failed: " + JSON.stringify(xhr), + ",\n " + status, ",\n " + error);
   });
 }
 
-function handlePlayerResult (res) {
+function handlePlayersResult (res) {
   var bbox = getBoundsWithMargin();
   clearPlayers();
   
@@ -445,11 +445,13 @@ function setSelectedPlayer(name) {
   {
     console.log("Selecting player " + name);
     selectedPlayer = name.toLowerCase();
+    loadSelectedPlayer();
     matchedPlayer = null;
     return true;
   } else {
     selectedPlayer = null;
     matchedPlayer = null;
+    showSelectedPlayer();
     return false;
   }
 }
@@ -613,6 +615,7 @@ function drawBoundaries(diagram)
         } else {
           matchedPlayer = rname;
         }
+        showSelectedPlayer();
       }
       opacity = 1;
       weight = 4;
@@ -632,13 +635,15 @@ function drawBoundaries(diagram)
     line.setMap(map);
     markersArray.push(line);
   }
+}
 
+function showSelectedPlayer() {
   // Show/hide selected player info tab
   if (selectedPlayer != null) {
     $( "#player-info" ).html( "<b>Selected player:</b><br>" + ((matchedPlayer == null) ? selectedPlayer : matchedPlayer));
     $( "#player-info" ).animate({top: '0px'});
   } else {
-    $( "#player-info" ).animate({top: '-3em'});
+    $( "#player-info" ).animate({top: '-4em'});
   }
 }
 
@@ -777,7 +782,6 @@ function colorFromHSV(h,s,v) {
       break;
   }
   var col = "#" + getHexByte(r) + getHexByte(g) + getHexByte(b);
-  // console.log("col: " + col);
   return col;
 }
 
@@ -877,6 +881,44 @@ function doSearch() {
   var txt = $("#searchField").val();
   if (txt) {
     gotoLocation(txt);
+  }
+}
+
+function loadSelectedPlayer() {
+  if (selectedPlayer != null) {
+   var data = [{
+      "name" : selectedPlayer
+    }];
+
+    $.ajax({
+      type: "POST",
+      url: "player-proxy.php",
+      contentType: "application/json",
+      data: JSON.stringify(data)
+    })
+    .done(function(res) {
+      console.log("Loaded " + selectedPlayer + " player info");
+      //measureTime("Zones loaded");
+      handlePlayerResult(res);
+    })
+    .fail(function(xhr, status, error) {
+      console.log("loadPlayer failed: " + JSON.stringify(xhr) + ",\n " + status + ",\n " + error);
+    });
+  }
+}
+
+function handlePlayerResult(res) {
+  console.log("handlePlayerResult: " + JSON.stringify(res));
+  if (res != null && res.length == 1) {
+    pInfo = res[0];
+    console.log("Got player " + pInfo.name + " selected player is " + selectedPlayer)
+    if (selectedPlayer == pInfo.name.toLowerCase()) {
+        $( "#player-info" ).html( "<b>Selected player:</b><br>" +
+          "<a href='http://turfgame.com/user/" + selectedPlayer + "' target='_blank'>" +
+          ((matchedPlayer == null) ? selectedPlayer : matchedPlayer + "</a>" +
+          " (" + pInfo.rank + ")<br>" +
+          "<b>p:</b> " + pInfo.points  + " z" + pInfo.zones.length + " +" + pInfo.pointsPerHour));
+    }
   }
 }
 

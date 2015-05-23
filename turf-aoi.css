@@ -3,7 +3,7 @@ html {
 }
 
 a {
-  color: #ddd;
+  color: #eee;
 }
 
 #map-canvas {
@@ -35,9 +35,9 @@ body {
 
 #player-info {
   left: 90px;
-  top: -3em;
+  top: -4em;
   width: 150px;
-  height: 2.5em;
+  height: 3.5em;
 }
 
 #zone-info {
