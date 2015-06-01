@@ -399,6 +399,7 @@ function handleTakeResult(res) {
         console.log(take.currentOwner.name + " took " + take.zone.name + " from "
           + ((take.previousOwner != null) ? take.previousOwner.name : "no one"));
         newTake = true;
+        addTake(take);
       }
     }
 
@@ -409,6 +410,13 @@ function handleTakeResult(res) {
   }
 
   lastUpdateTime = res[0].time;
+}
+
+function addTake(take)
+{
+  console.log("logging " + take.zone.name);
+  $( "#log" ).append( "<div class='logEntry'>" 
+    + take.currentOwner.name + " took " + take.zone.name + "</div>");
 }
 
 function selectPlayerOnClick(marker, playerName)

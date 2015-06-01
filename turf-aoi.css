@@ -128,6 +128,25 @@ input:focus {
   overflow: auto;
 }
 
+#log {
+  position: absolute;
+  width: 15em;
+  height: 90%;
+  z-index: 101;
+  background-color: rgba(0,0,0,0.5);
+  bottom: 0em;
+  right: 0em;
+  color: #eee;
+  padding: 0.5em;
+}
+
+.logEntry {
+  width: 100%;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(255,255,255,0.2);
+  border-bottom-style: solid;
+}
+
 .labels {
   width: 100px;
   padding: 0px;
