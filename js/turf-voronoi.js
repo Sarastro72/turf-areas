@@ -55,6 +55,7 @@ var latitudeFactor = 1;
 var displayInfo = false;
 var displaySearch = false;
 var mode = "owner";
+var $logPanel;
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -81,6 +82,15 @@ if (typeof(String.prototype.hashCode) === "undefined") {
 function initialize() {
 
   console.log(navigator.userAgent);
+
+  $logPanel = $( "#logArea").isotope({
+    itemSelector: '.logEntry',
+    layoutMode: 'vertical',
+    getSortData: {
+      timestamp: '[timestamp]'
+    },
+    sortBy: 'timestamp'
+  });
 
   // Reduce saturation of the map
   var styles = [
@@ -397,7 +407,7 @@ function handleTakeResult(res) {
           && take.longitude < bbox.northEast.lng)
       {
         console.log(take.currentOwner.name + " took " + take.zone.name + " from "
-          + ((take.previousOwner != null) ? take.previousOwner.name : "no one"));
+          + ((take.zone.previousOwner != null) ? take.zone.previousOwner.name : "no one"));
         newTake = true;
         addTake(take);
       }
@@ -415,8 +425,16 @@ function handleTakeResult(res) {
 function addTake(take)
 {
   console.log("logging " + take.zone.name);
-  $( "#log" ).append( "<div class='logEntry'>" 
-    + take.currentOwner.name + " took " + take.zone.name + "</div>");
+  newOwnerColor = colorFromStringHSV(take.currentOwner.name, 0, 0x40, 0xff);
+  prevOwnerColor = colorFromStringHSV(take.zone.previousOwner.name, 0, 0x40, 0xff);
+  takeDiv = $("<div class='logEntry' timestamp='" + take.time + "'/>")
+  takeDiv.append($("<span style='color: " + newOwnerColor + "'/>").append(take.currentOwner.name));
+  takeDiv.append(" took ")
+  takeDiv.append($("<span class='logZone'/>").append(take.zone.name));
+  takeDiv.append(" from ")
+  takeDiv.append($("<span style='color: " + prevOwnerColor + "'/>").append((take.zone.previousOwner != null) ? take.zone.previousOwner.name : "no one"));
+  $logPanel.prepend(takeDiv)
+  .isotope( 'prepended', takeDiv );
 }
 
 function selectPlayerOnClick(marker, playerName)

@@ -128,16 +128,25 @@ input:focus {
   overflow: auto;
 }
 
-#log {
+#logPanel {
   position: absolute;
-  width: 15em;
-  height: 90%;
-  z-index: 101;
-  background-color: rgba(0,0,0,0.5);
   bottom: 0em;
   right: 0em;
-  color: #eee;
+  width: 15em;
+  height: 90%;
+  background-color: rgba(0,0,0,0.7);
+  z-index: 101;
+  border-top-left-radius: 10px;
   padding: 0.5em;
+  font-size: 12px;
+}
+
+#logArea {
+  position: relative;
+  top: 0em;
+  width: 100%;
+  color: #ddd;
+  overflow: hidden;
 }
 
 .logEntry {
@@ -145,6 +154,10 @@ input:focus {
   border-bottom-width: 1px;
   border-bottom-color: rgba(255,255,255,0.2);
   border-bottom-style: solid;
+}
+
+.logZone {
+  color: #fff;
 }
 
 .labels {
