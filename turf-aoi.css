@@ -150,10 +150,14 @@ input:focus {
 }
 
 .logEntry {
-  width: 100%;
-  border-bottom-width: 1px;
-  border-bottom-color: rgba(255,255,255,0.2);
-  border-bottom-style: solid;
+  width: 95%;
+  border-width: 1px;
+  border-color: rgba(255,255,255,0.2);
+  border-style: solid;
+  border-radius: 5px;
+  padding: 2px;
+  margin-bottom: 1px;
+  background-color: rgba(128,128,128,0.5);
 }
 
 .logZone {
