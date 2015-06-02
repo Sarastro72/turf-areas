@@ -937,13 +937,12 @@ function handlePlayerResult(res) {
   console.log("handlePlayerResult: " + JSON.stringify(res));
   if (res != null && res.length == 1) {
     pInfo = res[0];
-    console.log("Got player " + pInfo.name + " selected player is " + selectedPlayer)
     if (selectedPlayer == pInfo.name.toLowerCase()) {
         $( "#player-info" ).html( "<b>Selected player:</b><br>" +
-          "<a href='http://turfgame.com/user/" + selectedPlayer + "' target='_blank'>" +
-          ((matchedPlayer == null) ? selectedPlayer : matchedPlayer + "</a>" +
+          "<a href='http://turfgame.com/user/" + pInfo.name + "' target='_blank'>" +
+          pInfo.name + "</a>" +
           " (" + pInfo.rank + ")<br>" +
-          "<b>p:</b> " + pInfo.points + " +" + pInfo.pointsPerHour + " <b>z:</b> " + pInfo.zones.length));
+          "<b>p:</b> " + pInfo.points + " +" + pInfo.pointsPerHour + " <b>z:</b> " + pInfo.zones.length);
     }
   }
 }
