@@ -60,6 +60,7 @@ var displaySearch = false;
 var mode = "owner";
 var $logPanel;
 var logList = [];
+var displayLog = false;
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -178,7 +179,7 @@ function initialize() {
       clearTimeout(loadTimer);
     }
     _gaq.push(['_trackEvent', 'LoadZones', 'BoundsChanged']);
-    loadTimer = setTimeout(loadZones, LOAD_DELAY);
+    loadTimer = setTimeout(boundsChanged, LOAD_DELAY);
   });
 
   if (location != null) {
@@ -280,7 +281,12 @@ function loadZones() {
   {
     updateInterval = setInterval(performUpdate, UPDATE_INTERVAL);
   }
+}
 
+function boundsChanged()
+{
+  loadZones();
+  resetTakes();
 }
 
 function tLatLng2voronoiXY(latlng)
@@ -442,6 +448,17 @@ function addTake(take)
     $logPanel.isotope('remove', logList.shift());
   }
 
+}
+
+function resetTakes()
+{
+  console.log("resetTakes()");
+  while (logList.length > 0)
+  {
+    $logPanel.isotope('remove', logList.shift());
+  }
+  lastUpdateTime = "0";
+  loadTakes();
 }
 
 function selectPlayerOnClick(marker, playerName)
