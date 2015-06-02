@@ -17,6 +17,9 @@ var ZONE_INFO_SHOW_TIME = 5000;   // in milliseconds
 // Enable profiling of time critical parts
 var PROFILE_ENABLED = false;
 
+// Max length of log item list
+var MAX_LOG_LIST_LENGTH = 20;
+
 // marker icon representing a zone
 var ZONE_ICON = {
   url: "img/zone.png",
@@ -56,6 +59,7 @@ var displayInfo = false;
 var displaySearch = false;
 var mode = "owner";
 var $logPanel;
+var logList = [];
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -390,11 +394,10 @@ function handleTakeResult(res) {
   var newTake = false;
 
   // Check that area is small enough to have zones loaded
-  if (area < 0.05) {
-    var bbox = getBoundsWithMargin();
+  var bbox = getBoundsWithMargin();
 
-    for (var i = 0; i < res.length; i++) {
-      var take = res[i];
+  for (var i = 0; i < res.length; i++) {
+    var take = res[i];
 
       // Check that this is a new take
       if (take.time <= lastUpdateTime) {
@@ -402,29 +405,25 @@ function handleTakeResult(res) {
       }
       // Reload if any new takes are within the bbox
       if (take.latitude > bbox.southWest.lat
-          && take.latitude < bbox.northEast.lat
-          && take.longitude > bbox.southWest.lng
-          && take.longitude < bbox.northEast.lng)
+        && take.latitude < bbox.northEast.lat
+        && take.longitude > bbox.southWest.lng
+        && take.longitude < bbox.northEast.lng)
       {
-        console.log(take.currentOwner.name + " took " + take.zone.name + " from "
-          + ((take.zone.previousOwner != null) ? take.zone.previousOwner.name : "no one"));
         newTake = true;
         addTake(take);
       }
     }
 
-    if (newTake) {
+    if (area < 0.05 && newTake) {
       _gaq.push(['_trackEvent', 'LoadZones', 'TakeEvent']);
       loadZones();
     }
-  }
 
-  lastUpdateTime = res[0].time;
-}
+    lastUpdateTime = res[0].time;
+  }
 
 function addTake(take)
 {
-  console.log("logging " + take.zone.name);
   newOwnerColor = colorFromStringHSV(take.currentOwner.name, 0, 0x40, 0xff);
   prevOwnerColor = colorFromStringHSV(take.zone.previousOwner.name, 0, 0x40, 0xff);
   takeDiv = $("<div class='logEntry' timestamp='" + take.time + "'/>")
@@ -434,7 +433,15 @@ function addTake(take)
   takeDiv.append(" from ")
   takeDiv.append($("<span style='color: " + prevOwnerColor + "'/>").append((take.zone.previousOwner != null) ? take.zone.previousOwner.name : "no one"));
   $logPanel.prepend(takeDiv)
-  .isotope( 'prepended', takeDiv );
+  .isotope('prepended', takeDiv );
+
+  logList.push(takeDiv);
+
+  while (logList.length > MAX_LOG_LIST_LENGTH)
+  {
+    $logPanel.isotope('remove', logList.shift());
+  }
+
 }
 
 function selectPlayerOnClick(marker, playerName)
