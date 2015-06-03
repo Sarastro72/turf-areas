@@ -18,7 +18,7 @@ var ZONE_INFO_SHOW_TIME = 5000;   // in milliseconds
 var PROFILE_ENABLED = false;
 
 // Max length of log item list
-var MAX_LOG_LIST_LENGTH = 20;
+var MAX_LOG_LIST_LENGTH = 50;
 
 // marker icon representing a zone
 var ZONE_ICON = {
@@ -58,7 +58,7 @@ var latitudeFactor = 1;
 var displayInfo = false;
 var displaySearch = false;
 var mode = "owner";
-var $logPanel;
+var logPanel;
 var logList = [];
 var displayLog = false;
 
@@ -88,8 +88,8 @@ function initialize() {
 
   console.log(navigator.userAgent);
 
-  $logPanel = $( "#logArea").isotope({
-    itemSelector: '.logEntry',
+  logPanel = $( "#log-area").isotope({
+    itemSelector: '.log-entry',
     layoutMode: 'vertical',
     getSortData: {
       timestamp: '[timestamp]'
@@ -405,47 +405,62 @@ function handleTakeResult(res) {
   for (var i = 0; i < res.length; i++) {
     var take = res[i];
 
-      // Check that this is a new take
-      if (take.time <= lastUpdateTime) {
-        break;
-      }
-      // Reload if any new takes are within the bbox
-      if (take.latitude > bbox.southWest.lat
-        && take.latitude < bbox.northEast.lat
-        && take.longitude > bbox.southWest.lng
-        && take.longitude < bbox.northEast.lng)
-      {
-        newTake = true;
-        addTake(take);
-      }
+    // Check that this is a new take
+    if (take.time <= lastUpdateTime) {
+      break;
     }
-
-    if (area < 0.05 && newTake) {
-      _gaq.push(['_trackEvent', 'LoadZones', 'TakeEvent']);
-      loadZones();
+    // Reload if any new takes are within the bbox
+    if (take.latitude > bbox.southWest.lat
+      && take.latitude < bbox.northEast.lat
+      && take.longitude > bbox.southWest.lng
+      && take.longitude < bbox.northEast.lng)
+    {
+      newTake = true;
+      addTake(take);
     }
-
-    lastUpdateTime = res[0].time;
   }
+
+  if (area < 0.05 && newTake) {
+    _gaq.push(['_trackEvent', 'LoadZones', 'TakeEvent']);
+    loadZones();
+  }
+
+  lastUpdateTime = res[0].time;
+}
 
 function addTake(take)
 {
-  newOwnerColor = colorFromStringHSV(take.currentOwner.name, 0, 0x40, 0xff);
-  prevOwnerColor = colorFromStringHSV(take.zone.previousOwner.name, 0, 0x40, 0xff);
-  takeDiv = $("<div class='logEntry' timestamp='" + take.time + "'/>")
+  var logEntry = makeTakeLogEntry(take);
+  addLogEntries(logEntry);
+  pruneLogList();
+}
+
+function makeTakeLogEntry(take)
+{
+  var newOwnerColor = colorFromStringHSV(take.currentOwner.name, 0, 0x40, 0xff);
+  var prevOwnerColor = colorFromStringHSV(take.zone.previousOwner.name, 0, 0x40, 0xff);
+  var takeDiv = $("<div class='log-entry' timestamp='" + take.time + "'/>")
   takeDiv.append($("<span style='color: " + newOwnerColor + "'/>").append(take.currentOwner.name));
   takeDiv.append(" took ")
-  takeDiv.append($("<span class='logZone'/>").append(take.zone.name));
+  takeDiv.append($("<span class='log-zone'/>").append(take.zone.name));
   takeDiv.append(" from ")
   takeDiv.append($("<span style='color: " + prevOwnerColor + "'/>").append((take.zone.previousOwner != null) ? take.zone.previousOwner.name : "no one"));
-  $logPanel.prepend(takeDiv)
-  .isotope('prepended', takeDiv );
 
-  logList.push(takeDiv);
+  return takeDiv;
+}
 
+
+function addLogEntries(entries) {
+  logPanel.prepend(entries)
+  .isotope('prepended', entries );
+
+  logList.push(entries);
+}
+
+function pruneLogList() {
   while (logList.length > MAX_LOG_LIST_LENGTH)
   {
-    $logPanel.isotope('remove', logList.shift());
+    logPanel.isotope('remove', logList.shift());
   }
 
 }
@@ -455,7 +470,7 @@ function resetTakes()
   console.log("resetTakes()");
   while (logList.length > 0)
   {
-    $logPanel.isotope('remove', logList.shift());
+    logPanel.isotope('remove', logList.shift());
   }
   lastUpdateTime = "0";
   loadTakes();
@@ -864,6 +879,17 @@ function toggleSearch() {
     $('#searchField').focus();
   }
   displaySearch = !displaySearch;
+}
+
+function toggleLog() {
+  if (displayLog)
+  {
+    $( "#log-panel" ).animate({right: '-16em'});
+  } else {
+    $( "#log-panel" ).animate({right: '0em'});    
+  }
+
+  displayLog = !displayLog;
 }
 
 // profiling

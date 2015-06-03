@@ -15,6 +15,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Helvetica", "Lucida Grande", "Arial", sans-serif;
+  overflow: hidden;
 }
 
 
@@ -69,6 +70,10 @@ div.icon {
 img.icon {
   width: 24px;
   height: 24px;
+}
+
+#log_icon {
+  display: block;
 }
 
 div.close {
@@ -128,10 +133,10 @@ input:focus {
   overflow: auto;
 }
 
-#logPanel {
+#log-panel {
   position: absolute;
   bottom: 0em;
-  right: 0em;
+  right: -16em;
   width: 15em;
   height: 90%;
   background-color: rgba(0,0,0,0.7);
@@ -141,7 +146,7 @@ input:focus {
   font-size: 12px;
 }
 
-#logArea {
+#log-area {
   position: relative;
   top: 0em;
   width: 100%;
@@ -149,7 +154,7 @@ input:focus {
   overflow: hidden;
 }
 
-.logEntry {
+.log-entry {
   width: 95%;
   border-width: 1px;
   border-color: rgba(255,255,255,0.2);
@@ -160,7 +165,7 @@ input:focus {
   background-color: rgba(128,128,128,0.5);
 }
 
-.logZone {
+.log-zone {
   color: #fff;
 }
 
