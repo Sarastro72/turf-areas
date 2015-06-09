@@ -397,11 +397,11 @@ function loadTakes() {
 }
 
 function handleTakeResult(res) {
+  measureTime("handleTakeResult");
   var newTake = false;
 
-  // Check that area is small enough to have zones loaded
   var bbox = getBoundsWithMargin();
-
+  var takeLogList = [];
   for (var i = 0; i < res.length; i++) {
     var take = res[i];
 
@@ -416,9 +416,14 @@ function handleTakeResult(res) {
       && take.longitude < bbox.northEast.lng)
     {
       newTake = true;
-      addTake(take);
+      var logEntry = makeTakeLogEntry(take);
+      console.log(JSON.stringify(logEntry));
+      takeLogList.push(logEntry);
     }
   }
+
+  addLogEntries(takeLogList);
+  pruneLogList();
 
   if (area < 0.05 && newTake) {
     _gaq.push(['_trackEvent', 'LoadZones', 'TakeEvent']);
@@ -426,20 +431,25 @@ function handleTakeResult(res) {
   }
 
   lastUpdateTime = res[0].time;
+  measureTime("handleTakeResult done");
 }
 
-function addTake(take)
-{
-  var logEntry = makeTakeLogEntry(take);
-  addLogEntries(logEntry);
-  pruneLogList();
-}
+// function addTake(take)
+// {
+//   var logEntry = makeTakeLogEntry(take);
+//   addLogEntries(logEntry);
+//   pruneLogList();
+// }
 
 function makeTakeLogEntry(take)
 {
   var newOwnerColor = colorFromStringHSV(take.currentOwner.name, 0, 0x40, 0xff);
   var prevOwnerColor = colorFromStringHSV(take.zone.previousOwner.name, 0, 0x40, 0xff);
   var takeDiv = $("<div class='log-entry' timestamp='" + take.time + "'/>")
+
+  console.log(JSON.stringify(take));
+  console.log(JSON.stringify(takeDiv));
+
   takeDiv.append($("<span style='color: " + newOwnerColor + "'/>").append(take.currentOwner.name));
   takeDiv.append(" took ")
   takeDiv.append($("<span class='log-zone'/>").append(take.zone.name));
@@ -451,10 +461,18 @@ function makeTakeLogEntry(take)
 
 
 function addLogEntries(entries) {
-  logPanel.prepend(entries)
-  .isotope('prepended', entries );
+//    logPanel.prepend(entries)
+//    .isotope('prepended', entries);
 
-  logList.push(entries);
+  for (var i = 0; i < entries.length; i++) {
+    logPanel.prepend(entries[i])
+    .isotope('prepended', entries[i]);
+  }
+
+  
+  //logList.push(entries);
+  Array.prototype.push.apply(logList, entries);
+  console.log("logList " + logList.length + " (" + entries.length + ")");
 }
 
 function pruneLogList() {
