@@ -483,7 +483,6 @@ function pruneLogList() {
   {
     logPanel.isotope('remove', logList.shift());
   }
-
 }
 
 function resetTakes()
@@ -508,6 +507,11 @@ function selectPlayerOnClick(marker, playerName)
 function showZoneInfoOnMouseOver(poly, zone)
 {
   google.maps.event.addListener(poly, 'mouseover', function() {
+    showZoneInfo(zone);
+  });
+}
+
+function showZoneInfo(zone) {
     var owner = "-";
     if (zone.currentOwner != null) {
       owner = zone.currentOwner.name;
@@ -530,15 +534,6 @@ function showZoneInfoOnMouseOver(poly, zone)
     hideZoneHighlight();
     zoneHighlight = zoneOutlines[zone.name];
     zoneHighlight.setMap(map);
-  });
-}
-
-function hideZoneHighlight()
-{
-  if (zoneHighlight != null) {
-    zoneHighlight.setMap(null);
-  }
-  zoneHighlight = null;
 }
 
 function hideZoneInfo()
@@ -548,6 +543,14 @@ function hideZoneInfo()
     hideZoneHighlight();
     displayZoneInfo = false;
   }
+}
+
+function hideZoneHighlight()
+{
+  if (zoneHighlight != null) {
+    zoneHighlight.setMap(null);
+  }
+  zoneHighlight = null;
 }
 
 function setSelectedPlayer(name) {
