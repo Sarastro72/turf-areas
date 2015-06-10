@@ -586,7 +586,8 @@ function drawVoronoi(diagram)
         strokeColor: "#FFFFFF",
         strokeOpacity: 1,
         strokeWeight: 3,
-        fillOpacity: 0,
+        fillColor: "#FFFFFF",
+        fillOpacity: 0.2,
         zIndex: 3
       });
       zoneOutlines[zone.name] = outline;
@@ -641,7 +642,7 @@ function drawBoundaries(diagram)
         showSelectedPlayer();
       }
       opacity = 1;
-      weight = 4;
+      weight = 3;
     }
 
     // Draw a line
