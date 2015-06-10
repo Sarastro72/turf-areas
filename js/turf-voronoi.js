@@ -603,10 +603,10 @@ function drawVoronoi(diagram)
       var outline = new google.maps.Polygon({
         paths: polyCoords,
         strokeColor: "#FFFFFF",
-        strokeOpacity: 1,
+        strokeOpacity: 0,
         strokeWeight: 3,
         fillColor: "#FFFFFF",
-        fillOpacity: 0.2,
+        fillOpacity: 0.5,
         zIndex: 3
       });
       zoneOutlines[zone.name] = outline;
