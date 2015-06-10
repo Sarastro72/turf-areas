@@ -44,6 +44,8 @@ var map;
 var voronoi = new Voronoi();
 var diagram;
 var zones = {};
+var zoneOutlines ={};
+var zoneHighlight = null;
 var markersArray = [];
 var playersArray = [];
 var loadTimer = null;
@@ -57,6 +59,7 @@ var zoneResult;
 var latitudeFactor = 1;
 var displayInfo = false;
 var displaySearch = false;
+var displayZoneInfo = false;
 var mode = "owner";
 var logPanel;
 var logList = [];
@@ -505,23 +508,47 @@ function selectPlayerOnClick(marker, playerName)
 function showZoneInfoOnMouseOver(poly, zone)
 {
   google.maps.event.addListener(poly, 'mouseover', function() {
-      var owner = "-";
-      if (zone.currentOwner != null) {
-        owner = zone.currentOwner.name;
-      }
-      $( "#zone-info" ).html( "<b>Zone: " + zone.name + "</b>" +
-        "<br><b>Owner:</b> " + owner +
-        "<br><b>Take:</b> " + zone.takeoverPoints + ", <b>PPH:</b> " + zone.pointsPerHour);
-      $( "#zone-info" ).animate({top: '0px'}, 400, function() {
-        if (zoneInfoTimer != null)
-        {
-          clearTimeout(zoneInfoTimer);
-        }
-        zoneInfoTimer = setTimeout(function() {$( "#zone-info" ).animate({top: '-4em'})}, ZONE_INFO_SHOW_TIME);
-      });
-    });
+    var owner = "-";
+    if (zone.currentOwner != null) {
+      owner = zone.currentOwner.name;
+    }
+    $( "#zone-info" ).html( "<b>Zone: " + zone.name + "</b>" +
+      "<br><b>Owner:</b> " + owner +
+      "<br><b>Take:</b> " + zone.takeoverPoints + ", <b>PPH:</b> " + zone.pointsPerHour);
+
+    if (!displayZoneInfo) {
+      $( "#zone-info" ).animate({top: '0px'}, 400);
+      displayZoneInfo = true;
+    }
+
+    if (zoneInfoTimer != null)
+    {
+      clearTimeout(zoneInfoTimer);
+    }
+    zoneInfoTimer = setTimeout(hideZoneInfo, ZONE_INFO_SHOW_TIME);
+
+    hideZoneHighlight();
+    zoneHighlight = zoneOutlines[zone.name];
+    zoneHighlight.setMap(map);
+  });
 }
 
+function hideZoneHighlight()
+{
+  if (zoneHighlight != null) {
+    zoneHighlight.setMap(null);
+  }
+  zoneHighlight = null;
+}
+
+function hideZoneInfo()
+{
+  if (displayZoneInfo) {
+    $( "#zone-info" ).animate({top: '-4em'});
+    hideZoneHighlight();
+    displayZoneInfo = false;
+  }
+}
 
 function setSelectedPlayer(name) {
   if (name != null && selectedPlayer != name.toLowerCase())
@@ -654,6 +681,19 @@ function drawVoronoi(diagram)
       showZoneInfoOnMouseOver(polygon, zone);
       polygon.setMap(map);
       markersArray.push(polygon);
+
+      // make zone highlight outline
+      var outline = new google.maps.Polygon({
+        paths: polyCoords,
+        strokeColor: "#FFFFFF",
+        strokeOpacity: 0,
+        strokeWeight: 3,
+        fillColor: "#FFFFFF",
+        fillOpacity: 0.5,
+        zIndex: 3
+      });
+      zoneOutlines[zone.name] = outline;
+
     }
   }
   measureTime("cells drawn");
@@ -662,6 +702,9 @@ function drawVoronoi(diagram)
   {
     drawBoundaries(diagram);
   }
+
+  // Clear some memory
+  zones = {};
 }
 
 function drawBoundaries(diagram)
@@ -701,7 +744,7 @@ function drawBoundaries(diagram)
         showSelectedPlayer();
       }
       opacity = 1;
-      weight = 4;
+      weight = 3;
     }
 
     // Draw a line
@@ -748,6 +791,8 @@ function clearOverlays() {
     markersArray[i].setMap(null);
   }
   markersArray = [];
+  zoneOutlines = {};
+  hideZoneHighlight();
 }
 
 function clearPlayers() {
