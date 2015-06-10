@@ -41,6 +41,8 @@ var map;
 var voronoi = new Voronoi();
 var diagram;
 var zones = {};
+var zoneOutlines ={};
+var zoneHighlight = null;
 var markersArray = [];
 var playersArray = [];
 var loadTimer = null;
@@ -436,6 +438,12 @@ function showZoneInfoOnMouseOver(poly, zone)
         }
         zoneInfoTimer = setTimeout(function() {$( "#zone-info" ).animate({top: '-4em'})}, ZONE_INFO_SHOW_TIME);
       });
+
+      if (zoneHighlight != null) {
+        zoneHighlight.setMap(null);
+      }
+      zoneHighlight = zoneOutlines[zone.name];
+      zoneHighlight.setMap(map);
     });
 }
 
@@ -571,6 +579,18 @@ function drawVoronoi(diagram)
       showZoneInfoOnMouseOver(polygon, zone);
       polygon.setMap(map);
       markersArray.push(polygon);
+
+      // make zone highlight outline
+      var outline = new google.maps.Polygon({
+        paths: polyCoords,
+        strokeColor: "#FFFFFF",
+        strokeOpacity: 1,
+        strokeWeight: 3,
+        fillOpacity: 0,
+        zIndex: 3
+      });
+      zoneOutlines[zone.name] = outline;
+
     }
   }
   measureTime("cells drawn");
@@ -579,6 +599,9 @@ function drawVoronoi(diagram)
   {
     drawBoundaries(diagram);
   }
+
+  // Clear some memory
+  zones = {};
 }
 
 function drawBoundaries(diagram)
@@ -665,6 +688,12 @@ function clearOverlays() {
     markersArray[i].setMap(null);
   }
   markersArray = [];
+  zoneOutlines = {};
+  if (zoneHighlight != null) {
+    zoneHighlight.setMap(null)
+    zoneHighlight = null;
+  }
+
 }
 
 function clearPlayers() {
