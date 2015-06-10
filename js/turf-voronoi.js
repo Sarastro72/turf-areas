@@ -56,6 +56,7 @@ var zoneResult;
 var latitudeFactor = 1;
 var displayInfo = false;
 var displaySearch = false;
+var displayZoneInfo = false;
 var mode = "owner";
 
 // ---- Prototypes ----
@@ -424,29 +425,47 @@ function selectPlayerOnClick(marker, playerName)
 function showZoneInfoOnMouseOver(poly, zone)
 {
   google.maps.event.addListener(poly, 'mouseover', function() {
-      var owner = "-";
-      if (zone.currentOwner != null) {
-        owner = zone.currentOwner.name;
-      }
-      $( "#zone-info" ).html( "<b>Zone: " + zone.name + "</b>" +
-        "<br><b>Owner:</b> " + owner +
-        "<br><b>Take:</b> " + zone.takeoverPoints + ", <b>PPH:</b> " + zone.pointsPerHour);
-      $( "#zone-info" ).animate({top: '0px'}, 400, function() {
-        if (zoneInfoTimer != null)
-        {
-          clearTimeout(zoneInfoTimer);
-        }
-        zoneInfoTimer = setTimeout(function() {$( "#zone-info" ).animate({top: '-4em'})}, ZONE_INFO_SHOW_TIME);
-      });
+    var owner = "-";
+    if (zone.currentOwner != null) {
+      owner = zone.currentOwner.name;
+    }
+    $( "#zone-info" ).html( "<b>Zone: " + zone.name + "</b>" +
+      "<br><b>Owner:</b> " + owner +
+      "<br><b>Take:</b> " + zone.takeoverPoints + ", <b>PPH:</b> " + zone.pointsPerHour);
 
-      if (zoneHighlight != null) {
-        zoneHighlight.setMap(null);
-      }
-      zoneHighlight = zoneOutlines[zone.name];
-      zoneHighlight.setMap(map);
-    });
+    if (!displayZoneInfo) {
+      $( "#zone-info" ).animate({top: '0px'}, 400);
+      displayZoneInfo = true;
+    }
+
+    if (zoneInfoTimer != null)
+    {
+      clearTimeout(zoneInfoTimer);
+    }
+    zoneInfoTimer = setTimeout(hideZoneInfo, ZONE_INFO_SHOW_TIME);
+
+    hideZoneHighlight();
+    zoneHighlight = zoneOutlines[zone.name];
+    zoneHighlight.setMap(map);
+  });
 }
 
+function hideZoneHighlight()
+{
+  if (zoneHighlight != null) {
+    zoneHighlight.setMap(null);
+  }
+  zoneHighlight = null;
+}
+
+function hideZoneInfo()
+{
+  if (displayZoneInfo) {
+    $( "#zone-info" ).animate({top: '-4em'});
+    hideZoneHighlight();
+    displayZoneInfo = false;
+  }
+}
 
 function setSelectedPlayer(name) {
   if (name != null && selectedPlayer != name.toLowerCase())
@@ -690,11 +709,7 @@ function clearOverlays() {
   }
   markersArray = [];
   zoneOutlines = {};
-  if (zoneHighlight != null) {
-    zoneHighlight.setMap(null)
-    zoneHighlight = null;
-  }
-
+  hideZoneHighlight();
 }
 
 function clearPlayers() {
