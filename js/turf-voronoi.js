@@ -97,7 +97,8 @@ function initialize() {
     getSortData: {
       timestamp: '[timestamp]'
     },
-    sortBy: 'timestamp'
+    sortBy: 'timestamp',
+    sortAscending: false
   });
 
   // Reduce saturation of the map
@@ -453,11 +454,15 @@ function makeTakeLogEntry(take)
   console.log(JSON.stringify(take));
   console.log(JSON.stringify(takeDiv));
 
+  takeDiv.append($("<span class='log-time'>").append(take.time.substring(11,16)));
   takeDiv.append($("<span style='color: " + newOwnerColor + "'/>").append(take.currentOwner.name));
   takeDiv.append(" took ")
   takeDiv.append($("<span class='log-zone'/>").append(take.zone.name));
   takeDiv.append(" from ")
   takeDiv.append($("<span style='color: " + prevOwnerColor + "'/>").append((take.zone.previousOwner != null) ? take.zone.previousOwner.name : "no one"));
+
+  takeDiv.mouseover(function () { selectLog(takeDiv); showZoneInfo(take.zone) });
+  takeDiv.mouseout(function () { unselectLog(takeDiv) });
 
   return takeDiv;
 }
@@ -468,8 +473,11 @@ function addLogEntries(entries) {
 //    .isotope('prepended', entries);
 
   for (var i = 0; i < entries.length; i++) {
-    logPanel.prepend(entries[i])
-    .isotope('prepended', entries[i]);
+    var div = entries[i];
+
+    logPanel.prepend(div)
+    .isotope('prepended', div);
+    logPanel.isotope( {sortBy: 'timestamp', sortAscending: false});
   }
 
   
@@ -509,6 +517,16 @@ function showZoneInfoOnMouseOver(poly, zone)
   google.maps.event.addListener(poly, 'mouseover', function() {
     showZoneInfo(zone);
   });
+}
+
+function selectLog(log) {
+  log.css("border-color", "rgba(255,255,255,1)");
+  log.css("background-color", "rgba(128,128,128,0.8)");
+}
+
+function unselectLog(log) {
+  log.css("border-color", "rgba(255,255,255,0.2)");
+  log.css("background-color", "rgba(128,128,128,0.5)");
 }
 
 function showZoneInfo(zone) {
@@ -689,7 +707,7 @@ function drawVoronoi(diagram)
       var outline = new google.maps.Polygon({
         paths: polyCoords,
         strokeColor: "#FFFFFF",
-        strokeOpacity: 0,
+        strokeOpacity: 1,
         strokeWeight: 3,
         fillColor: "#FFFFFF",
         fillOpacity: 0.5,

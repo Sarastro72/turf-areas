@@ -169,6 +169,12 @@ input:focus {
   color: #fff;
 }
 
+.log-time {
+  font-size: 10px;
+  margin-right: 6px;
+  vertical-align: top;
+}
+
 .labels {
   width: 100px;
   padding: 0px;
