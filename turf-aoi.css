@@ -139,11 +139,14 @@ input:focus {
   right: -16em;
   width: 15em;
   height: 90%;
-  background-color: rgba(0,0,0,0.7);
+  background-color: rgba(0,0,0,0.2);
   z-index: 101;
-  border-top-left-radius: 10px;
-  padding: 0.5em;
+  border-top-left-radius: 6px;
+  padding: 2px;
+  padding-right: 1px;
   font-size: 12px;
+  border-top: solid rgba(0,0,0,0.5) 1px;
+  border-left: solid rgba(0,0,0,0.5) 1px;
 }
 
 #log-area {
@@ -155,14 +158,14 @@ input:focus {
 }
 
 .log-entry {
-  width: 97%;
+  width: 96%;
   border-width: 1px;
-  border-color: rgba(255,255,255,0.2);
+  border-color: rgba(0,0,0,0.9);
   border-style: solid;
   border-radius: 5px;
   padding: 2px;
   margin-bottom: 1px;
-  background-color: rgba(128,128,128,0.5);
+  background-color: rgba(0,0,0,0.5);
 }
 
 .log-zone {

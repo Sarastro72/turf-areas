@@ -525,8 +525,8 @@ function selectLog(log) {
 }
 
 function unselectLog(log) {
-  log.css("border-color", "rgba(255,255,255,0.2)");
-  log.css("background-color", "rgba(128,128,128,0.5)");
+  log.css("border-color", "");
+  log.css("background-color", "");
 }
 
 function showZoneInfo(zone) {
