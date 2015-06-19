@@ -454,7 +454,7 @@ function makeTakeLogEntry(take)
   console.log(JSON.stringify(take));
   console.log(JSON.stringify(takeDiv));
 
-  takeDiv.append($("<span class='log-time'>").append(take.time.substring(11,16)));
+  takeDiv.append($("<span class='log-time'>").append(formatTime(take.time)));
   takeDiv.append($("<span style='color: " + newOwnerColor + "'/>").append(take.currentOwner.name));
   takeDiv.append(" took ")
   takeDiv.append($("<span class='log-zone'/>").append(take.zone.name));
@@ -1081,7 +1081,10 @@ function handlePlayerResult(res) {
   }
 }
 
+function formatTime(dateTimeString)
+{
+  return moment(dateTimeString).format("HH:mm");
+}
+
 
 google.maps.event.addDomListener(window, 'load', initialize);
-
-
