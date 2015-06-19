@@ -578,6 +578,7 @@ function setSelectedPlayer(name) {
     selectedPlayer = name.toLowerCase();
     loadSelectedPlayer();
     matchedPlayer = null;
+    showSelectedPlayer();
     return true;
   } else {
     selectedPlayer = null;
@@ -762,7 +763,6 @@ function drawBoundaries(diagram)
         } else {
           matchedPlayer = rname;
         }
-        showSelectedPlayer();
       }
       opacity = 1;
       weight = 3;
