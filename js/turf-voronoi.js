@@ -190,6 +190,11 @@ function initialize() {
     gotoLocation(location);
   }
 
+  if (loadLogPanelStatus() == true) {
+    toggleLog();
+  }
+
+
   // Setup submit on enter for search input field
   $('#searchField').keypress(function(e) {
     // Enter is pressed
@@ -421,7 +426,6 @@ function handleTakeResult(res) {
     {
       newTake = true;
       var logEntry = makeTakeLogEntry(take);
-      console.log(JSON.stringify(logEntry));
       takeLogList.push(logEntry);
     }
   }
@@ -974,6 +978,7 @@ function toggleLog() {
   }
 
   displayLog = !displayLog;
+  storeLogPanelStatus();
 }
 
 // profiling
@@ -1035,6 +1040,28 @@ function loadCurrentLocation() {
 
   return loc;
 }
+
+function storeLogPanelStatus() {
+  if (!supportsHtml5Storage()) {
+    return false;
+  }
+
+  localStorage.showLogPanel = displayLog;
+}
+
+function loadLogPanelStatus()
+{
+  if (!supportsHtml5Storage()) {
+    return false;
+  }
+
+  if (localStorage.showLogPanel == "false") {
+    return false;
+  }
+
+  return true;
+}
+
 
 function doSearch() {
   toggleSearch();
