@@ -17,7 +17,10 @@ var ZONE_INFO_SHOW_TIME = 5000;   // in milliseconds
 // Enable profiling of time critical parts
 var PROFILE_ENABLED = false;
 
-// Max length of log item list
+// Max number of takes that are remembered
+var TAKE_STORE_SIZE = 2500;
+
+// Max length of visible log item list
 var MAX_LOG_LIST_LENGTH = 50;
 
 // marker icon representing a zone
@@ -64,6 +67,7 @@ var mode = "owner";
 var logPanel;
 var logList = [];
 var displayLog = false;
+var takeStore = {};
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -413,6 +417,7 @@ function handleTakeResult(res) {
   var takeLogList = [];
   for (var i = 0; i < res.length; i++) {
     var take = res[i];
+    storeTake(take);
 
     // Check that this is a new take
     if (take.time <= lastUpdateTime) {
@@ -430,6 +435,7 @@ function handleTakeResult(res) {
     }
   }
 
+  pruneTakeStore();
   addLogEntries(takeLogList);
   pruneLogList();
 
@@ -442,12 +448,35 @@ function handleTakeResult(res) {
   measureTime("handleTakeResult done");
 }
 
-// function addTake(take)
-// {
-//   var logEntry = makeTakeLogEntry(take);
-//   addLogEntries(logEntry);
-//   pruneLogList();
-// }
+function storeTake(take)
+{
+
+  var takeEntry = {};
+  takeEntry.currentOwner = take.currentOwner.name;
+  takeEntry.previousOwner = (take.zone.previousOwner != null) ? take.zone.previousOwner.name : null;
+  takeEntry.zone = take.zone.name;
+  takeEntry.time = take.time;
+
+  var takeKey = formatTime(take.time) + takeEntry.zone;
+
+  takeStore[takeKey] = takeEntry;
+
+  console.log("storeTake() takeStore: " + Object.keys(takeStore).length);
+}
+
+function pruneTakeStore()
+{
+  var takeKeyList = Object.keys(takeStore);
+  if (takeKeyList.length > TAKE_STORE_SIZE) {
+    takeKeyList.sort(); // Sorts in ascending order
+    while (takeKeyList.length > TAKE_STORE_SIZE) {
+      var item = takeKeyList.shift();
+      console.log("prune: " + item);
+      delete takeStore[item];
+    }
+  }
+  console.log("pruneTakeStore() takeStore: " + Object.keys(takeStore).length);
+}
 
 function makeTakeLogEntry(take)
 {
