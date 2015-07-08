@@ -18,8 +18,4 @@ and (max-width : 640px) {
 	  margin-left: 2px;
 	  max-width: 24px;
 	}
-
-	#log_icon {
-	  display: none;
-	}
 }
