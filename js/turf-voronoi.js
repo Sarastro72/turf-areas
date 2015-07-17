@@ -572,7 +572,7 @@ function showZoneInfo(zone) {
       "<br><b>Take:</b> " + zone.takeoverPoints + ", <b>PPH:</b> " + zone.pointsPerHour);
 
     if (!displayZoneInfo) {
-      $( "#zone-info" ).animate({top: '0px'}, 400);
+      $( "#zone-info" ).animate({top: '0px'});
       displayZoneInfo = true;
     }
 
@@ -590,8 +590,7 @@ function showZoneInfo(zone) {
 function hideZoneInfo()
 {
   if (displayZoneInfo) {
-    $( "#zone-info" ).animate({top: '-4em'});
-    hideZoneHighlight();
+    $( "#zone-info" ).animate({top: '-4em'}, {complete: hideZoneHighlight});
     displayZoneInfo = false;
   }
 }
