@@ -488,7 +488,11 @@ function pruneTakeStore()
 function makeTakeLogEntry(take)
 {
   var newOwnerColor = colorFromStringHSV(take.currentOwner.name, 0, 0x40, 0xff);
-  var prevOwnerColor = colorFromStringHSV(take.zone.previousOwner.name, 0, 0x40, 0xff);
+
+  var prevOwnerColor = "#FFFFFF";
+  if (take.zone.previousOwner !== undefined) {
+    prevOwnerColor = colorFromStringHSV(take.zone.previousOwner.name, 0, 0x40, 0xff);
+  }
   var takeDiv = $("<div class='log-entry' timestamp='" + take.time + "'/>")
 
   console.log(JSON.stringify(take));
@@ -499,7 +503,7 @@ function makeTakeLogEntry(take)
   takeDiv.append(" took ")
   takeDiv.append($("<span class='log-zone'/>").append(take.zone.name));
   takeDiv.append(" from ")
-  takeDiv.append($("<span style='color: " + prevOwnerColor + "'/>").append((take.zone.previousOwner != null) ? take.zone.previousOwner.name : "no one"));
+  takeDiv.append($("<span style='color: " + prevOwnerColor + "'/>").append((take.zone.previousOwner !== undefined) ? take.zone.previousOwner.name : "no one"));
 
   takeDiv.mouseover(function () { selectLog(takeDiv); showZoneInfo(take.zone) });
   takeDiv.mouseout(function () { unselectLog(takeDiv) });
