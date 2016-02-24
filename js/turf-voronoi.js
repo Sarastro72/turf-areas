@@ -154,6 +154,11 @@ function initialize() {
     ]
   }];
 
+  var zoomControlOptions = {
+    "position": google.maps.ControlPosition.LEFT_BOTTOM,
+    "style": google.maps.ZoomControlStyle.DEFAULT
+  };
+
 
   // Default location Stockholm
   var lat = 59.32893;
@@ -173,11 +178,13 @@ function initialize() {
   mode = $.url().param('mode');
 
   var mapOptions = {
-    center: new google.maps.LatLng(lat, lng),
-    zoom: zoom,
-    mapTypeId: google.maps.MapTypeId.TERRAIN,
-    streetViewControl: false,
-    styles: styles
+    "center": new google.maps.LatLng(lat, lng),
+    "zoom": zoom,
+    "mapTypeId": google.maps.MapTypeId.TERRAIN,
+    "streetViewControl": false,
+    "styles": styles,
+    "zoomControl": true,
+    "zoomControlOptions": zoomControlOptions
   };
   map = new google.maps.Map(document.getElementById("map-canvas"),
     mapOptions);
