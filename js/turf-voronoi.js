@@ -73,6 +73,47 @@ var logList = [];
 var displayLog = false;
 var takeStore = {};
 
+var participants = ["AnnSch"
+,"Hjulpynt"
+,"Isengrim"
+,"Jockatim"
+,"järven"
+,"pancosmic"
+,"~Sisyfos~"
+,"veronicafe"
+,"Zoomerturfarn"
+,"Timmris"
+,"Entertainer"
+,"ReggaeHasse"
+,"lejonet"
+,"Mobius"
+,"flipper"
+,"Foxare"
+,"ZepLeddelin"
+,"N@a"
+,"embeoo"
+,"Rickshaw"
+,"iTurf"
+,"ErlingHoken"
+,"Loppan56"
+,"Kallejons"
+,"keeponwalking"
+,"elena"
+,"Heureka"
+,"Bombina"
+,"albee"
+,"frallan_69"
+,"solskenett"
+,"Lillatanten"
+,"majsanförfan"
+,"MrDent"
+,"Yenx"
+,"DaHunter" 
+,"Eweone"
+,"RidderVanMyyl" 
+,"NisseNasse"]
+
+
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
   Number.prototype.toRad = function() {
@@ -951,7 +992,11 @@ function colorFromZone(zone) {
 }
 
 function colorFromString(str) {
-  return colorFromStringHSV(str, 0, 0xFF, 0xFF);
+  if (participants.indexOf(str) >= 0) {
+    return colorFromStringHSV(str, 0, 0xFF, 0xFF);
+  } else {
+    return colorFromStringHSV(str, 0, 0x20, 0xFF);    
+  }
 }
 
 
