@@ -73,45 +73,87 @@ var logList = [];
 var displayLog = false;
 var takeStore = {};
 
-var participants = ["AnnSch"
-,"Hjulpynt"
-,"Isengrim"
-,"Jockatim"
-,"järven"
-,"pancosmic"
-,"~Sisyfos~"
-,"veronicafe"
-,"Zoomerturfarn"
-,"Timmris"
-,"Entertainer"
-,"ReggaeHasse"
-,"lejonet"
-,"Mobius"
-,"flipper"
-,"Foxare"
-,"ZepLeddelin"
-,"N@a"
-,"embeoo"
-,"Rickshaw"
-,"iTurf"
-,"ErlingHoken"
-,"Loppan56"
-,"Kallejons"
-,"keeponwalking"
-,"elena"
-,"Heureka"
-,"Bombina"
-,"albee"
-,"frallan_69"
-,"solskenett"
-,"Lillatanten"
-,"majsanförfan"
-,"MrDent"
-,"Yenx"
-,"DaHunter" 
-,"Eweone"
-,"RidderVanMyyl" 
-,"NisseNasse"]
+var participants = ["Bombina",
+"rabbit_rail",
+"LostDomain",
+"aivar",
+"mopskillen",
+"BambamGranit",
+"Cekt",
+"Kettx",
+"lejonet",
+"speedmaster100",
+"Hjulpynt",
+"NisseNasse",
+"matse55",
+"ReggaeHasse",
+"embeoo",
+"Entertainer",
+"Rickshaw",
+"pancosmic",
+"iTurf",
+"LBz",
+"rojter",
+"well",
+"elena",
+"Mobius",
+"acinom66",
+"majsanförfan",
+"Junioren",
+"Bullmannen",
+"Changrila",
+"veronicafe",
+"albee",
+"~Sisyfos~",
+"Celtikcross",
+"Pebbles",
+"CarreraGT",
+"LeffeM",
+"AIKTobbe",
+"erx007",
+"turingmachine",
+"DaHunter",
+"RiddervanMyyl",
+"ewq",
+"Zoomerturfarn",
+"N@a",
+"alfaturfen",
+"GoSt",
+"AnnSch",
+"keeponwalking",
+"edeby",
+"Falken55",
+"CattisB",
+"Pivo",
+"SneakyFudger",
+"Arantes",
+"airwolf",
+"FlyingFreedom",
+"Timmris",
+"Spikbebis75",
+"MrStarke",
+"alicubi",
+"Yenx",
+"annanna",
+"Gofika",
+"Sultanen",
+"PerTAst",
+"frowdrik",
+"TabulaRasa",
+"WKB-Joel",
+"MrLilja",
+"larryz",
+"prinsesskorv",
+"captHaddock",
+"Kaksmulan",
+"kremlan",
+"Zoomermilfen",
+"eskandia",
+"Mr__Noodle",
+"polythene",
+"Shivers",
+"Bizkit",
+"MrDent"];
 
 
 // ---- Prototypes ----
@@ -857,6 +899,9 @@ function drawBoundaries(diagram)
 
     var col = "#000000";
     var opacity = calculateOpacity(0.75);
+    if (mode == "teamsthlm") {
+      opacity = 0.2;
+    }
     var weight = 1;
     if (selectedPlayer != null 
       && (lname.toLowerCase() == selectedPlayer
@@ -992,11 +1037,15 @@ function colorFromZone(zone) {
 }
 
 function colorFromString(str) {
-  if (participants.indexOf(str) >= 0) {
-    return colorFromStringHSV(str, 0, 0xFF, 0xFF);
-  } else {
-    return colorFromStringHSV(str, 0, 0x20, 0xFF);    
+  if (mode == "teamsthlm") {
+    if (participants.indexOf(str) >= 0) {
+      return colorFromStringHSV(str, 0, 0xFF, 0xFF);
+    } else {
+      return colorFromStringHSV(str, 0, 0x10, 0xFF);    
+    }
   }
+
+  return colorFromStringHSV(str, 0, 0xFF, 0xFF);
 }
 
 
