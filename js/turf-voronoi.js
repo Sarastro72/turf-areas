@@ -159,8 +159,8 @@ var participants = ["Bombina",
 "Shivers",
 "Bizkit",
 "MrDent",
-"eweone"];
-
+"eweone",
+"tenoren"];
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -1043,14 +1043,6 @@ function colorFromZone(zone) {
 }
 
 function colorFromString(str) {
-  if (mode == "teamsthlm") {
-    if (participants.indexOf(str) >= 0) {
-      return colorFromStringHSV(str, 0, 0xFF, 0xFF);
-    } else {
-      return colorFromStringHSV(str, 0, 0x00, 0xFF);    
-    }
-  }
-
   return colorFromStringHSV(str, 0, 0xFF, 0xFF);
 }
 
@@ -1060,6 +1052,9 @@ function colorFromStringHSV(str, h, s, v) {
   var G = COLORS - 1;
   var hash = str.hashCode();
   var hue = (Math.floor((hash & G) + (h * G / 0xFF)) & G) * 1000 / COLORS;
+  if (mode == "teamsthlm" && participants.indexOf(str) < 0) {
+      s = 0;
+  }
   return colorFromHSV(hue, s, v);
 }
 
