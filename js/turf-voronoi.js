@@ -180,6 +180,7 @@ function initialize() {
   var mapOptions = {
     "center": new google.maps.LatLng(lat, lng),
     "zoom": zoom,
+    "gestureHandling": "greedy",
     "mapTypeId": google.maps.MapTypeId.TERRAIN,
     "streetViewControl": false,
     "styles": styles,
