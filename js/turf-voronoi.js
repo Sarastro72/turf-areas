@@ -517,18 +517,20 @@ function addLogEntries(entries) {
 //    logPanel.prepend(entries)
 //    .isotope('prepended', entries);
 
-  for (var i = 0; i < entries.length; i++) {
+  var length = Math.min(entries.length, MAX_LOG_LIST_LENGTH);
+
+  for (var i = length-1; i >= 0; i--) {
     var div = entries[i];
 
-    logPanel.prepend(div)
-    .isotope('prepended', div);
-    logPanel.isotope( {sortBy: 'timestamp', sortAscending: false});
+    logPanel
+      .prepend(div)
+      .isotope('prepended', div);
+    logList.push(div);
   }
+  logPanel
+    .isotope( {sortBy: 'timestamp', sortAscending: false});
 
-  
-  //logList.push(entries);
-  Array.prototype.push.apply(logList, entries);
-  console.log("logList " + logList.length + " (" + entries.length + ")");
+  console.log("logList " + logList.length + " (" + length + ")");
 }
 
 function pruneLogList() {
