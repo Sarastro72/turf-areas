@@ -469,7 +469,7 @@ function storeTake(take)
 
   takeStore[takeKey] = takeEntry;
 
-  console.log("storeTake() takeStore: " + Object.keys(takeStore).length);
+  //console.log("storeTake() takeStore: " + Object.keys(takeStore).length);
 }
 
 function pruneTakeStore()
@@ -496,8 +496,8 @@ function makeTakeLogEntry(take)
   }
   var takeDiv = $("<div class='log-entry' timestamp='" + take.time + "'/>")
 
-  console.log(JSON.stringify(take));
-  console.log(JSON.stringify(takeDiv));
+  //console.log(JSON.stringify(take));
+  //console.log(JSON.stringify(takeDiv));
 
   takeDiv.append($("<span class='log-time'>").append(formatTime(take.time)));
   takeDiv.append($("<span style='color: " + newOwnerColor + "'/>").append(take.currentOwner.name));
