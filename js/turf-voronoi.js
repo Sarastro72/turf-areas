@@ -903,40 +903,42 @@ function drawBoundaries(diagram)
       continue;
     }
 
-    var col = "#000000";
-    var opacity = calculateOpacity(0.75);
-    if (mode == "teamsthlm") {
-      opacity = 0.2;
-    }
-    var weight = 1;
-    if (selectedPlayer != null 
-      && (lname.toLowerCase() == selectedPlayer
-      || rname.toLowerCase() == selectedPlayer))
-    {
-      if (matchedPlayer == null) {
-        if (lname.toLowerCase() == selectedPlayer) {
-          matchedPlayer = lname;
-        } else {
-          matchedPlayer = rname;
-        }
+    if (mode != "teamsthlm" || isParticipant(lname) || isParticipant(rname)) {
+      var col = "#000000";
+      var opacity = calculateOpacity(0.75);
+      if (mode == "teamsthlm") {
+        opacity = 0.2;
       }
-      opacity = 1;
-      weight = 2;
-    }
+      var weight = 1;
+      if (selectedPlayer != null 
+        && (lname.toLowerCase() == selectedPlayer
+        || rname.toLowerCase() == selectedPlayer))
+      {
+        if (matchedPlayer == null) {
+          if (lname.toLowerCase() == selectedPlayer) {
+            matchedPlayer = lname;
+          } else {
+            matchedPlayer = rname;
+          }
+        }
+        opacity = 1;
+        weight = 2;
+      }
 
-    // Draw a line
-    var start = voronoiXY2gLatLng(edge.va);
-    var stop = voronoiXY2gLatLng(edge.vb);
-    coordinates = [start, stop];
-    var line = new google.maps.Polyline({
-      path: coordinates,
-      strokeColor: col,
-      strokeOpacity: opacity,
-      strokeWeight: weight,
-      zIndex: 2
-    });
-    line.setMap(map);
-    markersArray.push(line);
+      // Draw a line
+      var start = voronoiXY2gLatLng(edge.va);
+      var stop = voronoiXY2gLatLng(edge.vb);
+      coordinates = [start, stop];
+      var line = new google.maps.Polyline({
+        path: coordinates,
+        strokeColor: col,
+        strokeOpacity: opacity,
+        strokeWeight: weight,
+        zIndex: 2
+      });
+      line.setMap(map);
+      markersArray.push(line);
+    }
   }
 }
 
@@ -1046,13 +1048,15 @@ function colorFromString(str) {
   return colorFromStringHSV(str, 0, 0xFF, 0xFF);
 }
 
-
+function isParticipant(player) {
+  return Boolean(participants.indexOf(player) >= 0);
+}
 
 function colorFromStringHSV(str, h, s, v) {
   var G = COLORS - 1;
   var hash = str.hashCode();
   var hue = (Math.floor((hash & G) + (h * G / 0xFF)) & G) * 1000 / COLORS;
-  if (mode == "teamsthlm" && participants.indexOf(str) < 0) {
+  if (mode == "teamsthlm" && !isParticipant(str)) {
       s = 0;
   }
   return colorFromHSV(hue, s, v);
