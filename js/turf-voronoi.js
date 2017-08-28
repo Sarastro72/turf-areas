@@ -73,94 +73,112 @@ var logList = [];
 var displayLog = false;
 var takeStore = {};
 
-var participants = ["Bombina",
-"rabbit_rail",
-"SUPERIOЯ",
-"Sretna",
-"Zontjuven",
-"LostDomain",
-"aivar",
-"mopskillen",
-"BambamGranit",
-"Cekt",
-"Kettx",
-"lejonet",
-"speedmaster100",
-"Foxare",
-"Hjulpynt",
-"NisseNasse",
-"matse55",
-"ReggaeHasse",
-"embeoo",
-"Entertainer",
-"Rickshaw",
-"pancosmic",
-"iTurf",
-"LBz",
-"Arkiv",
-"rojter",
-"well",
-"elena",
-"Mobius",
-"acinom66",
-"majsanförfan",
-"Junioren",
-"Bullmannen",
-"Changrila",
-"veronicafe",
-"albee",
-"~Sisyfos~",
-"Celtikcross",
-"Pebbles",
-"CarreraGT",
-"LeffeM",
-"AIKTobbe",
-"erx007",
-"turingmachine",
-"DaHunter",
-"RiddervanMyyl",
-"ewq",
-"Zoomerturfarn",
-"N@a",
-"alfaturfen",
-"GoSt",
-"AnnSch",
-"keeponwalking",
-"edeby",
-"Falken55",
-"CattisB",
-"Pivo",
-"SneakyFudger",
-"Arantes",
-"airwolf",
-"FlyingFreedom",
-"Timmris",
-"Spikbebis75",
-"MrStarke",
-"alicubi",
-"Yenx",
-"annanna",
-"Gofika",
-"Sultanen",
-"PerTAst",
-"frowdrik",
-"TabulaRasa",
-"WKB-Joel",
-"MrLilja",
-"larryz",
-"prinsesskorv",
-"captHaddock",
-"Kaksmulan",
-"kremlan",
-"Zoomermilfen",
-"eskandia",
-"Mr__Noodle",
-"polythene",
-"Shivers",
-"Bizkit",
-"MrDent",
-"eweone",
-"tenoren"];
+var participants = [
+  "aiktobbe",
+  "aivar",
+  "albee",
+  "annanna",
+  "annsch",
+  "arantes",
+  "arkiv",
+  "bambamgranit",
+  "barirohimba",
+  "bazinga",
+  "bigal",
+  "bizkit",
+  "bts26",
+  "bubblan",
+  "bullmannen",
+  "cattisb",
+  "cekt",
+  "celtikcross",
+  "changrila",
+  "clabbe100",
+  "cookie75",
+  "coolapappan",
+  "dahunter",
+  "edeby",
+  "emcaen",
+  "emilejson",
+  "entertainer",
+  "erx007",
+  "eweone",
+  "ewq",
+  "falken55",
+  "florence",
+  "foppstar",
+  "frameworks",
+  "freze",
+  "gelehallonet",
+  "gofika",
+  "gost",
+  "gredelinus",
+  "helge73",
+  "hjulpynt",
+  "hyrax",
+  "jenza",
+  "jonle",
+  "judgenetting",
+  "junioren",
+  "larryz",
+  "lbz",
+  "leffem",
+  "leifons",
+  "lejonet",
+  "madpuppy",
+  "magnusnordstro",
+  "majsanf&ouml;rfan",
+  "masmo",
+  "matse55",
+  "micki72",
+  "mr__noodle",
+  "mrchip",
+  "mrdent",
+  "mrlilja",
+  "mrpeo",
+  "mrstarke",
+  "n@a",
+  "nathalieb",
+  "nissenasse",
+  "notan83",
+  "oberoff",
+  "pancosmic",
+  "pebbles",
+  "peterspirea",
+  "pink_unicorn",
+  "polythene",
+  "pope",
+  "rabbit_rail",
+  "reggaehasse",
+  "reuter",
+  "rickshaw",
+  "riddervanmyyl",
+  "rod_polsan",
+  "rojter",
+  "shining",
+  "shivers",
+  "smaug_88",
+  "sneakyfudger",
+  "soilworker_90",
+  "speedmaster100",
+  "sretna",
+  "stuvstabiker",
+  "sultanen",
+  "syltluvan",
+  "tabularasa",
+  "tenoren",
+  "timmris",
+  "trollbunden",
+  "turingmachine",
+  "veronicafe",
+  "viktor1978",
+  "vnv_legion",
+  "well",
+  "winmem",
+  "yenx",
+  "zoomerturfarn",
+  "zudo"
+];
 
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
@@ -627,8 +645,6 @@ function makeTakeLogEntry(take)
 
 
 function addLogEntries(entries) {
-//    logPanel.prepend(entries)
-//    .isotope('prepended', entries);
 
   var length = Math.min(entries.length, MAX_LOG_LIST_LENGTH);
 
@@ -882,6 +898,10 @@ function drawVoronoi(diagram)
   zones = {};
 }
 
+function isTeamMode() {
+  return Boolean(mode == "teamsthlm");
+}
+
 function drawBoundaries(diagram)
 {
   for (var i = 0; i < diagram.edges.length; i++)
@@ -903,13 +923,9 @@ function drawBoundaries(diagram)
       continue;
     }
 
-    if (mode != "teamsthlm" || isParticipant(lname) || isParticipant(rname)) {
+    if (!isTeamMode() || isParticipant(lname) || isParticipant(rname)) {
       var col = "#000000";
-      var opacity = calculateOpacity(0.75);
-      if (mode == "teamsthlm") {
-        opacity = 0.2;
-      }
-      var weight = 1;
+      var weight = 1
       if (selectedPlayer != null 
         && (lname.toLowerCase() == selectedPlayer
         || rname.toLowerCase() == selectedPlayer))
@@ -932,7 +948,7 @@ function drawBoundaries(diagram)
       var line = new google.maps.Polyline({
         path: coordinates,
         strokeColor: col,
-        strokeOpacity: opacity,
+        strokeOpacity: 1,
         strokeWeight: weight,
         zIndex: 2
       });
@@ -1049,14 +1065,14 @@ function colorFromString(str) {
 }
 
 function isParticipant(player) {
-  return Boolean(participants.indexOf(player) >= 0);
+  return Boolean(participants.indexOf(player.toLowerCase()) >= 0);
 }
 
 function colorFromStringHSV(str, h, s, v) {
   var G = COLORS - 1;
   var hash = str.hashCode();
   var hue = (Math.floor((hash & G) + (h * G / 0xFF)) & G) * 1000 / COLORS;
-  if (mode == "teamsthlm" && !isParticipant(str)) {
+  if (isTeamMode() && !isParticipant(str)) {
       s = 0;
   }
   return colorFromHSV(hue, s, v);
