@@ -73,113 +73,6 @@ var logList = [];
 var displayLog = false;
 var takeStore = {};
 
-var participants = [
-  "aiktobbe",
-  "aivar",
-  "albee",
-  "annanna",
-  "annsch",
-  "arantes",
-  "arkiv",
-  "bambamgranit",
-  "barirohimba",
-  "bazinga",
-  "bigal",
-  "bizkit",
-  "bts26",
-  "bubblan",
-  "bullmannen",
-  "cattisb",
-  "cekt",
-  "celtikcross",
-  "changrila",
-  "clabbe100",
-  "cookie75",
-  "coolapappan",
-  "dahunter",
-  "edeby",
-  "emcaen",
-  "emilejson",
-  "entertainer",
-  "erx007",
-  "eweone",
-  "ewq",
-  "falken55",
-  "florence",
-  "foppstar",
-  "frameworks",
-  "freze",
-  "gelehallonet",
-  "gofika",
-  "gost",
-  "gredelinus",
-  "helge73",
-  "hjulpynt",
-  "hyrax",
-  "jenza",
-  "jonle",
-  "judgenetting",
-  "junioren",
-  "larryz",
-  "lbz",
-  "leffem",
-  "leifons",
-  "lejonet",
-  "madpuppy",
-  "magnusnordstro",
-  "majsanf&ouml;rfan",
-  "masmo",
-  "matse55",
-  "micki72",
-  "mr__noodle",
-  "mrchip",
-  "mrdent",
-  "mrlilja",
-  "mrpeo",
-  "mrstarke",
-  "n@a",
-  "nathalieb",
-  "nissenasse",
-  "notan83",
-  "oberoff",
-  "pancosmic",
-  "pebbles",
-  "peterspirea",
-  "pink_unicorn",
-  "polythene",
-  "pope",
-  "rabbit_rail",
-  "reggaehasse",
-  "reuter",
-  "rickshaw",
-  "riddervanmyyl",
-  "rod_polsan",
-  "rojter",
-  "shining",
-  "shivers",
-  "smaug_88",
-  "sneakyfudger",
-  "soilworker_90",
-  "speedmaster100",
-  "sretna",
-  "stuvstabiker",
-  "sultanen",
-  "syltluvan",
-  "tabularasa",
-  "tenoren",
-  "timmris",
-  "trollbunden",
-  "turingmachine",
-  "veronicafe",
-  "viktor1978",
-  "vnv_legion",
-  "well",
-  "winmem",
-  "yenx",
-  "zoomerturfarn",
-  "zudo"
-];
-
 // ---- Prototypes ----
 if (typeof(Number.prototype.toRad) === "undefined") {
   Number.prototype.toRad = function() {
@@ -969,10 +862,17 @@ function showSelectedPlayer() {
 }
 
 // The more clutter, the less opacity.
-function calculateOpacity(strength, zone = null)
+function calculateOpacity(strength, zone)
 {
   if (mode == "pph") {
     return 0.4
+  }
+  if (isTeamMode()) {
+    if (zone.currentOwner && isParticipant(zone.currentOwner.name)) {
+      return 0.3
+    } else {
+      return 0
+    }
   }
   let opacity = 0.75 * strength
   if (area > 0.015) {
@@ -1212,6 +1112,8 @@ function storeCurrentState() {
   }
   if (mode == "pph") {
     url += "&m=pph"
+  } else if (isTeamMode()) {
+    url += "&m=teamsthlm"
   }
   if (oldurl !== url) {
     window.history.pushState("", "", url);
@@ -1316,3 +1218,88 @@ function formatTime(dateTimeString)
 
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
+var participants = [
+"#1725",
+"0beroff",
+"albee",
+"alicubi",
+"allacalle",
+"annsch",
+"bacchus_",
+"baddis",
+"baloot",
+"berg",
+"bozze666",
+"bäckagubben",
+"cekt",
+"cialar",
+"deppen",
+"drbengt",
+"edeby",
+"emsons83",
+"entertainer",
+"erx007",
+"florence",
+"flowertwig",
+"flygaralex",
+"freze",
+"gelehallonet",
+"giftorm",
+"gost",
+"greenlight",
+"grottis",
+"hjulpynt",
+"iturf",
+"jimmyaik",
+"kollpågubben",
+"krussidullen",
+"ksv",
+"l@rry",
+"lbz",
+"leffem",
+"leifons",
+"leilarsson",
+"lerizo",
+"molex",
+"mr__noodle",
+"mrdent",
+"mrpeo",
+"mummis",
+"mysmulle",
+"nissenasse",
+"pajje",
+"pancosmic",
+"peterspirea",
+"pex",
+"plompen",
+"possanzini",
+"prion1",
+"proprimo",
+"qoc",
+"ralfturfsmurf",
+"reggaehasse",
+"rojter",
+"roqan",
+"sikcud",
+"sippa",
+"spikbebis75",
+"st@llion",
+"stabac",
+"stålblå",
+"superxnova",
+"thecat",
+"themoffe",
+"theurw",
+"turferian",
+"turfpelle",
+"turfsmurf",
+"tålamodet",
+"udoh",
+"vipervirus",
+"virulfalive",
+"vnv_legion",
+"wabbe65",
+"zonerx",
+"zudo"
+];
