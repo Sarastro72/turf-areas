@@ -359,16 +359,18 @@ function performUpdate() {
 }
 
 function loadPlayers() {
-  $.ajax({
-    type: "GET",
-    url: "playerlocation-proxy.php",
-  })
-  .done(function(res) {
-    handlePlayersResult(res);
-  })
-  .fail(function(xhr, status, error) {
-    console.log("loadPlayers failed: " + JSON.stringify(xhr), + ",\n " + status, ",\n " + error);
-  });
+  if (mode != "pph") {
+    $.ajax({
+      type: "GET",
+      url: "playerlocation-proxy.php",
+    })
+    .done(function(res) {
+      handlePlayersResult(res);
+    })
+    .fail(function(xhr, status, error) {
+      console.log("loadPlayers failed: " + JSON.stringify(xhr), + ",\n " + status, ",\n " + error);
+    });
+  }
 }
 
 function handlePlayersResult (res) {
