@@ -694,12 +694,6 @@ function calculateVoronoi(sites)
 
 function drawVoronoi(diagram)
 {
-  var opacity = calculateOpacity(0.2);
-  if (mode == "pph")
-  {
-    opacity = 0.5;
-  }
-
   for(var i = 0; i < diagram.cells.length; i++) {
     var polyCoords = [];
     var cell = diagram.cells[i];
@@ -731,7 +725,7 @@ function drawVoronoi(diagram)
     if (polyCoords.length > 0)
     {
       var col = colorFromZone(zone);
-      var zoneOpacity = opacity;
+      var zoneOpacity = calculateOpacity(0.2, zone);
 
       if (col == "-") {  // hack!
         col = "#FFFFFF";
@@ -741,8 +735,8 @@ function drawVoronoi(diagram)
       var polygon = new google.maps.Polygon({
         paths: polyCoords,
         strokeColor: "#000000",
-        strokeOpacity: zoneOpacity / 2,
-        strokeWeight: 1,
+        strokeOpacity: 0,
+        strokeWeight: 0,
         fillColor: col,
         fillOpacity: zoneOpacity,
         title: zone.name
@@ -843,16 +837,25 @@ function showSelectedPlayer() {
 }
 
 // The more clutter, the less opacity.
-function calculateOpacity(strength)
+function calculateOpacity(strength, zone = null)
 {
-  // console.log("area: " + area);
+  if (mode == "pph") {
+    return 0.4
+  }
+  let opacity = 0.75 * strength
   if (area > 0.015) {
-    return 0.4 * strength;
+    opacity = 0.4 * strength
+  } else if (area < 0.005) {
+    opacity = strength
   }
-  if (area < 0.005) {
-    return strength;
+
+  if (zone != null
+      && zone.currentOwner != null
+      && zone.currentOwner.name.toLowerCase() == selectedPlayer) {
+    opacity *= 3;
   }
-  return 0.75 * strength;
+
+  return Math.min(opacity, 1)
 }
 
 function clearOverlays() {
