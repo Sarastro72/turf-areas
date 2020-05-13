@@ -34,11 +34,11 @@ var ZONE_ICON = {
 
 // Marker representing a player
 var PLAYER_ICON = {
-  url: "img/player.png",
-  size: new google.maps.Size(35, 90),
+  url: "img/enemy.png",
+  size: new google.maps.Size(24, 38),
   origin: new google.maps.Point(0,0),
-  anchor: new google.maps.Point(8, 40),
-  scaledSize: new google.maps.Size(17, 40)
+  anchor: new google.maps.Point(12, 39),
+  scaledSize: new google.maps.Size(24, 38)
 };
 
 // ---- Variables ----
@@ -670,6 +670,7 @@ function placeMarker(zone)
     position: pos,
     map: map,
     icon: ZONE_ICON,
+    opacity: 0.7,
     title: "Name: " + zone.name + "\nOwner: " + owner + "\nTake: " + zone.takeoverPoints + ", PPH: " + zone.pointsPerHour,
     zIndex: 10
   });
