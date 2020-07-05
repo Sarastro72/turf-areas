@@ -1151,7 +1151,7 @@ function handlePlayerResult(res) {
           "<a href='http://turfgame.com/user/" + pInfo.name + "' target='_blank'>" +
           pInfo.name + "</a>" +
           " (" + pInfo.rank + ")<br>" +
-          "<b>p:</b> " + pInfo.points + " +" + pInfo.pointsPerHour + " <b>z:</b> " + pInfo.zones.length);
+          "<b>p:</b> " + pInfo.points + "+" + pInfo.pointsPerHour + " <b>z:</b> " + pInfo.zones.length);
     }
   }
 }
