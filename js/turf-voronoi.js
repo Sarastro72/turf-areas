@@ -64,6 +64,9 @@ var displayInfo = false;
 var displaySearch = false;
 var displayZoneInfo = false;
 var mode = "owner";
+var urlSearch
+var urlLoc
+var urlZoom
 var logPanel;
 var logList = [];
 var displayLog = false;
@@ -173,9 +176,25 @@ function initialize() {
     zoom = storedLoc.zoom;
   }
 
-  var location = $.url().param('location');
   setSelectedPlayer($.url().param('player'));
   mode = $.url().param('mode');
+  urlSearch = $.url().param('s');
+  urlLoc = $.url().param('l');
+  urlZoom = parseInt($.url().param('z'));
+
+  if (urlLoc !== undefined) {
+    p = urlLoc.split(",")
+    pLat = parseFloat(p[0])
+    pLong = parseFloat(p[1])
+    if (!(isNaN(pLat) || isNaN(pLong))) {
+      lat = pLat
+      lng= pLong
+    }
+  }
+
+  if (urlZoom !== undefined && Number.isInteger(urlZoom) && urlZoom > 0) {
+    zoom=urlZoom
+  }
 
   var mapOptions = {
     "center": new google.maps.LatLng(lat, lng),
@@ -198,8 +217,8 @@ function initialize() {
     loadTimer = setTimeout(boundsChanged, LOAD_DELAY);
   });
 
-  if (location != null) {
-    gotoLocation(location);
+  if (urlSearch !== undefined) {
+    gotoLocation(urlSearch);
   }
 
   if (loadLogPanelStatus() == true) {
@@ -1058,7 +1077,7 @@ function supportsHtml5Storage() {
   }
 }
 
-function storeCurrentLocation () {
+function storeCurrentLocation() {
   if (!supportsHtml5Storage()) {
     return false;
   }
@@ -1068,7 +1087,13 @@ function storeCurrentLocation () {
   localStorage.currentLng = loc.lng();
   localStorage.currentZoom = map.getZoom();
 
-
+  var url = window.location.href.replace(/\?.*/, "")
+  url += "?l=" + loc.lat().toFixed(4) + "," + loc.lng().toFixed(4)
+  url += "&z=" + map.getZoom()
+  if (mode == "pph") {
+    url += "&mode=pph"
+  }
+  window.history.pushState("object or string", "Title", url);
   return true;
 }
 
