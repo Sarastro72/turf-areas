@@ -64,9 +64,6 @@ var displayInfo = false;
 var displaySearch = false;
 var displayZoneInfo = false;
 var mode = "owner";
-var urlSearch
-var urlLoc
-var urlZoom
 var logPanel;
 var logList = [];
 var displayLog = false;
@@ -176,11 +173,11 @@ function initialize() {
     zoom = storedLoc.zoom;
   }
 
-  setSelectedPlayer($.url().param('player'));
-  mode = $.url().param('mode');
-  urlSearch = $.url().param('s');
-  urlLoc = $.url().param('l');
-  urlZoom = parseInt($.url().param('z'));
+  let urlPlayer = $.url().param('p');
+  let urlSearch = $.url().param('s');
+  let urlLoc = $.url().param('l');
+  let urlZoom = parseInt($.url().param('z'));
+  mode = $.url().param('mode') || $.url().param('m');
 
   if (urlLoc !== undefined) {
     p = urlLoc.split(",")
@@ -208,6 +205,8 @@ function initialize() {
   };
   map = new google.maps.Map(document.getElementById("map-canvas"),
     mapOptions);
+
+  setSelectedPlayer(urlPlayer)
 
   google.maps.event.addListener(map, "bounds_changed", function() {
     if (loadTimer != null) {
@@ -282,7 +281,7 @@ function calculateMargins(bbox) {
 
 function loadZones() {
   initTime();
-  storeCurrentLocation();
+  storeCurrentState();
   var mbbox = getBoundsWithMargin();
 
   area = (mbbox.northEast.lat - mbbox.southWest.lat) * (mbbox.northEast.lng - mbbox.southWest.lng);
@@ -646,13 +645,12 @@ function setSelectedPlayer(name) {
     loadSelectedPlayer();
     matchedPlayer = null;
     showSelectedPlayer();
-    return true;
   } else {
     selectedPlayer = null;
     matchedPlayer = null;
     showSelectedPlayer();
-    return false;
   }
+  storeCurrentState()
 }
 
 function getBoundsWithMargin()
@@ -1077,24 +1075,25 @@ function supportsHtml5Storage() {
   }
 }
 
-function storeCurrentLocation() {
-  if (!supportsHtml5Storage()) {
-    return false;
-  }
+function storeCurrentState() {
   var loc = map.getCenter();
-  localStorage.locationStored = true;
-  localStorage.currentLat = loc.lat();
-  localStorage.currentLng = loc.lng();
-  localStorage.currentZoom = map.getZoom();
-
   var url = window.location.href.replace(/\?.*/, "")
   url += "?l=" + loc.lat().toFixed(4) + "," + loc.lng().toFixed(4)
   url += "&z=" + map.getZoom()
+  if (selectedPlayer) {
+    url += "&p=" + encodeURIComponent(selectedPlayer)
+  }
   if (mode == "pph") {
-    url += "&mode=pph"
+    url += "&m=pph"
   }
   window.history.pushState("object or string", "Title", url);
-  return true;
+
+  if (supportsHtml5Storage()) {
+    localStorage.locationStored = true;
+    localStorage.currentLat = loc.lat();
+    localStorage.currentLng = loc.lng();
+    localStorage.currentZoom = map.getZoom();
+  }
 }
 
 function loadCurrentLocation() {
