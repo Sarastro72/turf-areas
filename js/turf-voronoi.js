@@ -1076,8 +1076,9 @@ function supportsHtml5Storage() {
 }
 
 function storeCurrentState() {
-  var loc = map.getCenter();
-  var url = window.location.href.replace(/\?.*/, "")
+  let loc = map.getCenter();
+  let oldurl = window.location.href
+  let url = oldurl.replace(/\?.*/, "")
   url += "?l=" + loc.lat().toFixed(4) + "," + loc.lng().toFixed(4)
   url += "&z=" + map.getZoom()
   if (selectedPlayer) {
@@ -1086,7 +1087,9 @@ function storeCurrentState() {
   if (mode == "pph") {
     url += "&m=pph"
   }
-  window.history.pushState("object or string", "Title", url);
+  if (oldurl !== url) {
+    window.history.pushState("", "", url);
+  }
 
   if (supportsHtml5Storage()) {
     localStorage.locationStored = true;
