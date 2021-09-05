@@ -1,27 +1,30 @@
 // ---- Constants ----
 // buffer time between map change and reload
-var LOAD_DELAY=500;   // in milliseconds
+const LOAD_DELAY=500;   // in milliseconds
 
 // Delay between player and take updates
-var UPDATE_INTERVAL=10000;   // in milliseconds
+const UPDATE_INTERVAL=10000;   // in milliseconds
 
 // margin around viewport where zones are loaded and calculated
-var LOAD_MARGIN=0.5;   // in kilometers
+const LOAD_MARGIN=0.5;   // in kilometers
 
 // Number of colors. Must be 2^N
-var COLORS = 0x80;
+const COLORS = 0x80;
 
 // Time that the zone info tab is shown on inactivity
-var ZONE_INFO_SHOW_TIME = 5000;   // in milliseconds
+const ZONE_INFO_SHOW_TIME = 5000;   // in milliseconds
 
 // Enable profiling of time critical parts
-var PROFILE_ENABLED = false;
+const PROFILE_ENABLED = false;
 
 // Max number of takes that are remembered
-var TAKE_STORE_SIZE = 2500;
+const TAKE_STORE_SIZE = 2500;
 
 // Max length of visible log item list
-var MAX_LOG_LIST_LENGTH = 50;
+const MAX_LOG_LIST_LENGTH = 50;
+
+// Track max age, How long after take should a zone be more bright (minutes)
+const TRACK_MAX_AGE = 30
 
 // marker icon representing a zone
 var ZONE_ICON = {
@@ -41,10 +44,11 @@ var PLAYER_ICON = {
   scaledSize: new google.maps.Size(24, 38)
 };
 
+const geocoder = new google.maps.Geocoder();
+const voronoi = new Voronoi();
+
 // ---- Variables ----
-var geocoder = new google.maps.Geocoder();
 var map;
-var voronoi = new Voronoi();
 var diagram;
 var zones = {};
 var zoneOutlines ={};
@@ -812,7 +816,7 @@ function drawBoundaries(diagram)
 
     var col = "#000000";
     var opacity = calculateOpacity(0.75);
-    var weight = 2;
+    var weight = 1;
     if (selectedPlayer != null 
       && (lname.toLowerCase() == selectedPlayer
       || rname.toLowerCase() == selectedPlayer))
@@ -825,7 +829,7 @@ function drawBoundaries(diagram)
         }
       }
       opacity = 1;
-      weight = 3;
+      weight = 2;
     }
 
     // Draw a line
@@ -867,10 +871,17 @@ function calculateOpacity(strength, zone = null)
     opacity = strength
   }
 
-  if (zone != null
-      && zone.currentOwner != null
-      && zone.currentOwner.name.toLowerCase() == selectedPlayer) {
-    opacity *= 3;
+  if (zone != null) {
+    if(zone.currentOwner != null && zone.currentOwner.name.toLowerCase() == selectedPlayer) {
+      opacity *= 3;
+    } else {
+      let taken = Math.floor(Date.parse(zone.dateLastTaken) / 60000)
+      let now = Math.floor(Date.now() / 60000)
+      let age = Math.min(now - taken, TRACK_MAX_AGE)
+      if (age < TRACK_MAX_AGE) {
+        opacity = opacity + opacity * (TRACK_MAX_AGE - age) / (TRACK_MAX_AGE / 2)
+      }
+    }
   }
 
   return Math.min(opacity, 1)
