@@ -179,7 +179,7 @@ function initialize () {
     let urlSearch = $.url().param('s');
     let urlLoc = $.url().param('l');
     let urlZoom = parseInt($.url().param('z'));
-    mode = $.url().param('mode') || $.url().param('m');
+    mode = $.url().param('mode') || $.url().param('m') || '';
 
     if (urlLoc !== undefined) {
         p = urlLoc.split(",")
@@ -1177,6 +1177,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 const teams = {
     "teamsthlmn": [
         "0beroff",
+        "aicar",
         "aivar",
         "alicubi",
         "bambamgranit",
@@ -1187,6 +1188,7 @@ const teams = {
         "clalin",
         "dahunter",
         "drbengt",
+        "erx007",
         "foppstar",
         "gofika",
         "gost",
@@ -1197,12 +1199,14 @@ const teams = {
         "knasmasken",
         "leifons",
         "lejonet",
+        "lizzeliten",
         "magnusn",
         "molex",
         "nightdriver",
         "pancosmic",
         "peterspirea",
         "pope",
+        "possanzini",
         "prion1",
         "proprimo",
         "riddervanmyyl",
@@ -1211,6 +1215,7 @@ const teams = {
         "stenensthlm",
         "stålblå",
         "superioЯ",
+        "sweper",
         "tessla",
         "theurw",
         "trollbunden",
@@ -1219,6 +1224,7 @@ const teams = {
         "zonerx"
     ],
     "teamsthlms": [
+        "#1725",
         "albee",
         "allacalle",
         "anitem",
@@ -1227,6 +1233,7 @@ const teams = {
         "boggiexl",
         "bäckagubben",
         "cekt",
+        "conejon",
         "delias",
         "deppen",
         "emsons83",
@@ -1243,22 +1250,27 @@ const teams = {
         "l@rry",
         "leffem",
         "lindholmen",
+        "mangowasp",
         "mrpeo",
+        "mummis",
         "mysmulle",
         "nysättra-åke",
         "olof65",
+        "pekman",
         "pfjell",
         "plompen",
         "qoc",
         "rabbit_rail",
         "rappapå",
+        "roqan",
         "st@llion",
         "stuvstabiker",
         "thebennett",
         "thewalkman",
+        "tortuga",
         "tålamodet",
         "veronicafe",
-        "vindökråka",
+        "vintercykel",
         "vnv_legion",
         "zykla"
     ]
